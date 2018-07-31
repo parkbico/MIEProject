@@ -33,6 +33,12 @@
             android:text="Redo"/>
 
         <Button
+            android:id="@+id/btnColorPickerD"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Picker"/>
+
+        <Button
             android:id="@+id/btnColor"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

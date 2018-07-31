@@ -11,7 +11,7 @@ public class DrawingActivity extends AppCompatActivity {
 
     private FrameLayout frame;
 
-    private Button btnUndo, btnRedo, btnColor;
+    private Button btnUndo, btnRedo, btnColorPickerD, btnColor;
 
     private DrawView mDrawView;
 
@@ -26,6 +26,7 @@ public class DrawingActivity extends AppCompatActivity {
 
         btnUndo = findViewById(R.id.btnUndo);
         btnRedo = findViewById(R.id.btnRedo);
+        btnColorPickerD = findViewById(R.id.btnColorPickerD);
         btnColor = findViewById(R.id.btnColor);
 
         mDrawView = new DrawView(this);
@@ -45,6 +46,13 @@ public class DrawingActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 mDrawView.onClickRedo();
+            }
+        });
+
+        btnColorPickerD.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mDrawView.setPicking(true);
             }
         });
 
