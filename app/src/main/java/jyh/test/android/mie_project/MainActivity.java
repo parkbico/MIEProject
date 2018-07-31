@@ -15,7 +15,7 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 
     Button btnNewDrawing , btnNewText;
-    //test 학원컴 - 개인컴 test
+    //
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
