@@ -17,32 +17,56 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="1">
+        android:layout_height="50dp"
+        android:background="#00A0F0"
+        android:layout_weight="1"
+        android:gravity="center_vertical">
 
         <Button
             android:id="@+id/btnUndo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Undo"/>
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_margin="5dp"
+            android:background="@mipmap/undo"
+            android:layout_weight="1"/>
 
         <Button
             android:id="@+id/btnRedo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Redo"/>
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_margin="5dp"
+            android:background="@mipmap/redo"
+            android:layout_weight="1"/>
 
         <Button
             android:id="@+id/btnColorPickerD"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Picker"/>
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_margin="5dp"
+            android:background="@mipmap/dropper"
+            android:layout_weight="1"/>
 
         <Button
             android:id="@+id/btnColor"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Color"/>
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_margin="5dp"
+            android:background="@mipmap/pen"
+            android:layout_weight="1"/>
+
+        <Button
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_margin="5dp"
+            android:background="@mipmap/ic_launcher"
+            android:layout_weight="1"/>
+
+        <Button
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_margin="5dp"
+            android:background="@mipmap/ic_launcher"
+            android:layout_weight="1"/>
     </LinearLayout>
 
 </LinearLayout>

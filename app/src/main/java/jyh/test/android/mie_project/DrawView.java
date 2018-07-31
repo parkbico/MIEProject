@@ -18,8 +18,9 @@ public class DrawView extends View implements View.OnTouchListener{
     private Path mPath;
     private Paint mPaint;
     private ArrayList<Path> paths = new ArrayList<>();
-    private ArrayList<Paint> paints = new ArrayList<>();
     private ArrayList<Path> undonePaths = new ArrayList<>();
+    private ArrayList<Paint> paints = new ArrayList<>();
+    private ArrayList<Paint> undonePaints = new ArrayList<>();
 
     private float mX, mY;
 
@@ -71,6 +72,7 @@ public class DrawView extends View implements View.OnTouchListener{
 
     private void touch_start(float x, float y){
         undonePaths.clear();
+        undonePaints.clear();
 
         mPath.reset();
         mPath.moveTo(x, y);
@@ -102,14 +104,16 @@ public class DrawView extends View implements View.OnTouchListener{
 
     public void onClickUndo () {
         if (paths.size() > 0){
-            undonePaths.add(paths.remove(paths.size()-1));
+            undonePaths.add(paths.remove(paths.size() - 1));
+            undonePaints.add(paints.remove(paints.size() - 1));
             invalidate();
         }
     }
 
     public void onClickRedo (){
         if (undonePaths.size() > 0){
-            paths.add(undonePaths.remove(undonePaths.size()-1));
+            paths.add(undonePaths.remove(undonePaths.size() - 1));
+            paints.add(undonePaints.remove(undonePaints.size() - 1));
             invalidate();
         }
     }

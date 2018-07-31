@@ -1,20 +1,17 @@
 package jyh.test.android.mie_project;
 
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 
 public class DrawingActivity extends AppCompatActivity {
 
-    private FrameLayout frame;
-
-    private Button btnUndo, btnRedo, btnColorPickerD, btnColor;
-
     private DrawView mDrawView;
-
     private MyColorPicker colorPicker;
 
     @Override
@@ -22,7 +19,9 @@ public class DrawingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_drawing);
 
-        frame = findViewById(R.id.frame);
+        FrameLayout frame = findViewById(R.id.frame);
+
+        final Button btnUndo, btnRedo, btnColorPickerD, btnColor;
 
         btnUndo = findViewById(R.id.btnUndo);
         btnRedo = findViewById(R.id.btnRedo);
@@ -32,8 +31,7 @@ public class DrawingActivity extends AppCompatActivity {
         mDrawView = new DrawView(this);
         frame.addView(mDrawView);
 
-        colorPicker = new MyColorPicker();
-        colorPicker.init(this, mDrawView);
+        colorPicker = new MyColorPicker(this, mDrawView);
 
         btnUndo.setOnClickListener(new View.OnClickListener() {
             @Override
