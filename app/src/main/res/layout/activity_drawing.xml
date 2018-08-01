@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -17,10 +16,10 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
         android:background="#00A0F0"
         android:layout_weight="1"
-        android:gravity="center_vertical">
+        android:gravity="center_vertical|center_horizontal">
 
         <Button
             android:id="@+id/btnUndo"
@@ -28,7 +27,7 @@
             android:layout_height="45dp"
             android:layout_margin="5dp"
             android:background="@mipmap/undo"
-            android:layout_weight="1"/>
+            style="?android:attr/buttonBarStyle"/>
 
         <Button
             android:id="@+id/btnRedo"
@@ -36,7 +35,7 @@
             android:layout_height="45dp"
             android:layout_margin="5dp"
             android:background="@mipmap/redo"
-            android:layout_weight="1"/>
+            style="?android:attr/buttonBarStyle"/>
 
         <Button
             android:id="@+id/btnColorPickerD"
@@ -44,7 +43,7 @@
             android:layout_height="45dp"
             android:layout_margin="5dp"
             android:background="@mipmap/dropper"
-            android:layout_weight="1"/>
+            style="?android:attr/buttonBarStyle"/>
 
         <Button
             android:id="@+id/btnPencilD"
@@ -52,7 +51,7 @@
             android:layout_height="45dp"
             android:layout_margin="5dp"
             android:background="@mipmap/pen"
-            android:layout_weight="1"/>
+            style="?android:attr/buttonBarStyle"/>
 
         <Button
             android:id="@+id/btnEraserD"
@@ -60,14 +59,14 @@
             android:layout_height="45dp"
             android:layout_margin="5dp"
             android:background="@mipmap/erase"
-            android:layout_weight="1"/>
+            style="?android:attr/buttonBarStyle"/>
 
         <Button
             android:layout_width="45dp"
             android:layout_height="45dp"
             android:layout_margin="5dp"
             android:background="@mipmap/ic_launcher"
-            android:layout_weight="1"/>
+            style="?android:attr/buttonBarStyle"/>
 
         <Button
             android:id="@+id/btnCapture"

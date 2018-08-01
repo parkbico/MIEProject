@@ -181,6 +181,11 @@ public class DrawView extends View implements View.OnTouchListener{
         return true;
     }
 
+    @Override
+    public boolean performClick() {
+        return super.performClick();
+    }
+
     private void setPaint(int color, int width){
         mPaint.setColor(color);
         mPaint.setStrokeWidth(width);
