@@ -14,20 +14,24 @@ import com.gun0912.tedpermission.TedPermission;
 
 import java.util.ArrayList;
 
+
 public class MainActivity extends AppCompatActivity {
 
     Button btnNewDrawing , btnNewText;
-    //test..
-    //test2
-    //test3
-    //test4
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if(ActivityCompat.checkSelfPermission( this , Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ){
+        if(ActivityCompat.checkSelfPermission(
+                this , Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ){
+            setPermission();
+        }
+
+        if(ActivityCompat.checkSelfPermission(
+                this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
+
             setPermission();
         }
 
@@ -40,7 +44,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
 
     //앱 권한설정 감지자
     PermissionListener permissionListener = new PermissionListener() {
@@ -56,15 +59,14 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-
     //앱 권한설정 TedPermission 설정
     private void setPermission(){
         TedPermission.with(this)
                 .setPermissionListener(permissionListener)
-                .setDeniedMessage("갤러리 접근 권한이 필요합니다. \n 권한 수락을 해주세요.")
-                .setPermissions(
-                        Manifest.permission.READ_EXTERNAL_STORAGE
-                ).check();
+                .setDeniedMessage("앱에서 요구하는 권한이 있습니다. \n 권한 수락을 해주세요.")
+                .setPermissions(Manifest.permission.READ_EXTERNAL_STORAGE)
+                .setPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                .check();
     }
 
 }
