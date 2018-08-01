@@ -27,7 +27,6 @@ public class MainActivity extends AppCompatActivity {
             setPermission();
         }
 
-
         btnNewDrawing = findViewById(R.id.btnNewDrawing);
         btnNewDrawing.setOnClickListener(new View.OnClickListener() {
             @Override
