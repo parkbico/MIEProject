@@ -17,6 +17,9 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 
     Button btnNewDrawing , btnNewText;
+    //test..
+    //test2
+    //test3
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,7 +29,6 @@ public class MainActivity extends AppCompatActivity {
         if(ActivityCompat.checkSelfPermission( this , Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ){
             setPermission();
         }
-
 
         btnNewDrawing = findViewById(R.id.btnNewDrawing);
         btnNewDrawing.setOnClickListener(new View.OnClickListener() {
