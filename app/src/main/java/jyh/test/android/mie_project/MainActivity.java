@@ -19,6 +19,7 @@ public class MainActivity extends AppCompatActivity {
     Button btnNewDrawing , btnNewText;
     //test..
     //test2
+    //test3
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
