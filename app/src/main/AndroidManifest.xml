@@ -18,7 +18,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+<<<<<<< HEAD
         <activity android:name=".DrawingActivity"/>
+=======
+>>>>>>> 2cbb6ef79349f46c45cb559f8da481a4fcdc28e9
     </application>
 
 </manifest>

@@ -26,8 +26,4 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation 'gun0912.ted:tedpermission:2.2.0'
-<<<<<<< HEAD
-    implementation 'com.larswerkman:HoloColorPicker:1.5'
-=======
->>>>>>> 2cbb6ef79349f46c45cb559f8da481a4fcdc28e9
 }

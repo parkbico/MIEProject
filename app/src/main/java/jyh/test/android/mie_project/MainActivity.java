@@ -1,12 +1,18 @@
 package jyh.test.android.mie_project;
 
 import android.Manifest;
+<<<<<<< HEAD
 import android.content.Intent;
+=======
+>>>>>>> 2cbb6ef79349f46c45cb559f8da481a4fcdc28e9
 import android.content.pm.PackageManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+<<<<<<< HEAD
 import android.view.View;
+=======
+>>>>>>> 2cbb6ef79349f46c45cb559f8da481a4fcdc28e9
 import android.widget.Button;
 
 import com.gun0912.tedpermission.PermissionListener;
@@ -17,6 +23,10 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 
     Button btnNewDrawing , btnNewText;
+<<<<<<< HEAD
+=======
+    //
+>>>>>>> 2cbb6ef79349f46c45cb559f8da481a4fcdc28e9
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
+<<<<<<< HEAD
         btnNewDrawing = findViewById(R.id.btnNewDrawing);
         btnNewDrawing.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -36,6 +47,9 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(i);
             }
         });
+=======
+
+>>>>>>> 2cbb6ef79349f46c45cb559f8da481a4fcdc28e9
     }
 
 
