@@ -47,7 +47,7 @@ public class MyColorPicker {
     private SeekBar.OnSeekBarChangeListener onSetValue = new SeekBar.OnSeekBarChangeListener() {
         @Override
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-            drawView.setCurrentValue(progress);
+            drawView.setCurrentWidth(progress);
         }
 
         @Override

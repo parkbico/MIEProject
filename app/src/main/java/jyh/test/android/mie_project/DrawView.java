@@ -25,9 +25,18 @@ public class DrawView extends View implements View.OnTouchListener{
     private float mX, mY;
 
     private int currentColor = Color.BLUE;
-    private int currentValue = 6;
+    private int currentWidth = 6;
 
+    /**
+     * {@code true} ColorPicker 활성화 상태 (btnColorPickerD 버튼 클릭)
+     * {@code false} ColorPicker 비활성화 상태
+     */
     private boolean isPicking = false;
+
+    /**
+     * {@code true} 색상 선택 팝업 활성화 상태 (btnPencilD 버튼 클릭)
+     * {@code false} 색상 선택 팝업 비활성화 상태
+     */
     private boolean isPopupShown = false;
 
     public void setPicking(boolean picking) {
@@ -44,10 +53,10 @@ public class DrawView extends View implements View.OnTouchListener{
         mPaint.setColor(currentColor);
     }
 
-    public void setCurrentValue(int currentValue) {
-        this.currentValue = currentValue;
+    public void setCurrentWidth(int currentWidth) {
+        this.currentWidth = currentWidth;
 
-        mPaint.setStrokeWidth(currentValue);
+        mPaint.setStrokeWidth(currentWidth);
     }
 
     public DrawView(Context context){
@@ -99,7 +108,7 @@ public class DrawView extends View implements View.OnTouchListener{
 
         mPath = new Path();
         mPaint = new Paint();
-        setPaint(currentColor, currentValue);
+        setPaint(currentColor, currentWidth);
     }
 
     public void onClickUndo () {
@@ -180,6 +189,14 @@ public class DrawView extends View implements View.OnTouchListener{
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setStrokeJoin(Paint.Join.ROUND);
         mPaint.setStrokeCap(Paint.Cap.ROUND);
+    }
+
+    public void erase(){
+        mPath.reset();
+        paths.clear();
+        paints.clear();
+
+        invalidate();
     }
 
     public Bitmap getBitmapFromView(View view) {
