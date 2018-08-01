@@ -17,6 +17,7 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 
     Button btnNewDrawing , btnNewText;
+    //test..
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
