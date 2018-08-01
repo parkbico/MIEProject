@@ -47,7 +47,7 @@
             android:layout_weight="1"/>
 
         <Button
-            android:id="@+id/btnColor"
+            android:id="@+id/btnPencilD"
             android:layout_width="45dp"
             android:layout_height="45dp"
             android:layout_margin="5dp"
@@ -55,10 +55,11 @@
             android:layout_weight="1"/>
 
         <Button
+            android:id="@+id/btnEraserD"
             android:layout_width="45dp"
             android:layout_height="45dp"
             android:layout_margin="5dp"
-            android:background="@mipmap/ic_launcher"
+            android:background="@mipmap/erase"
             android:layout_weight="1"/>
 
         <Button

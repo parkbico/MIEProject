@@ -9,7 +9,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -32,13 +31,14 @@ public class DrawingActivity extends AppCompatActivity {
 
         FrameLayout frame = findViewById(R.id.frame);
 
-        Button btnUndo, btnRedo, btnColorPickerD, btnColor, btnCapture;
+        Button btnUndo, btnRedo, btnColorPickerD, btnPencilD, btnEraserD, btnCapture;
 
         btnUndo = findViewById(R.id.btnUndo);
         btnRedo = findViewById(R.id.btnRedo);
         btnColorPickerD = findViewById(R.id.btnColorPickerD);
-        btnColor = findViewById(R.id.btnColor);
         btnCapture = findViewById(R.id.btnCapture);
+        btnPencilD = findViewById(R.id.btnPencilD);
+        btnEraserD = findViewById(R.id.btnEraserD);
 
         mDrawView = new DrawView(this);
         frame.addView(mDrawView);
@@ -66,7 +66,7 @@ public class DrawingActivity extends AppCompatActivity {
             }
         });
 
-        btnColor.setOnClickListener(new View.OnClickListener() {
+        btnPencilD.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 colorPicker.showPicker(view);
@@ -74,18 +74,25 @@ public class DrawingActivity extends AppCompatActivity {
         });
 
         btnCapture.setOnClickListener(new View.OnClickListener() {
+                                          @Override
+                                          public void onClick(View view) {
+                                              Toast.makeText(getApplicationContext(), "캡쳐완료", Toast.LENGTH_SHORT).show();
+                                              View rootView = getWindow().getDecorView();//activity의 view정보 구하기
+
+                                              File screenShot = ScreenShot(rootView);
+                                              if (screenShot != null) {
+                                                  //저장
+                                                  sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(screenShot)));
+                                                  //sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.parse("file://"+ Environment.getExternalStorageDirectory())));
+
+                                              }
+                                          }
+                                      });
+        btnEraserD.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                Toast.makeText(getApplicationContext(),"캡쳐완료", Toast.LENGTH_SHORT).show();
-                View rootView = getWindow().getDecorView();//activity의 view정보 구하기
-
-                File screenShot = ScreenShot(rootView);
-                if (screenShot != null) {
-                    //저장
-                    sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(screenShot)));
-                    //sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.parse("file://"+ Environment.getExternalStorageDirectory())));
-
-                }
+            public void onClick(View v) {
+                Toast.makeText(getApplicationContext(), "지우개가 선택되었습니다.", Toast.LENGTH_SHORT).show();
+                mDrawView.setCurrentColor(Color.WHITE);
             }
         });
 
