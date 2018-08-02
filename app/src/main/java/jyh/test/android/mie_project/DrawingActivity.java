@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,11 +27,14 @@ import java.io.IOException;
 import java.util.Date;
 
 public class DrawingActivity extends AppCompatActivity {
+    final int CROP_FROM_CAMERA = 0;
     final int TAKE_CAMERA = 1;
 
     private DrawView mDrawView;
     private MyColorPicker colorPicker;
     private FrameLayout frame;
+
+    private Uri mImageCaptureUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -140,8 +144,15 @@ public class DrawingActivity extends AppCompatActivity {
         public boolean onMenuItemClick(MenuItem menuItem) {
             switch(menuItem.getItemId()){
                 case R.id.camera:
-                    Intent intent = new Intent();
-                    intent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
+                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+                    String url = "tmp" + String.valueOf(System.currentTimeMillis()) + ".jpg";
+                    mImageCaptureUri = FileProvider.getUriForFile(getApplicationContext(),
+                            "jyh.test.android.mie_project",
+                            new File(Environment.getExternalStorageDirectory(), url));
+
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, mImageCaptureUri);
+
                     startActivityForResult(intent, TAKE_CAMERA);
 
                     break;
@@ -155,8 +166,43 @@ public class DrawingActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if(resultCode == RESULT_OK){
             switch(requestCode){
+                case CROP_FROM_CAMERA:
+                    final Bundle extras = data.getExtras();
+
+                    if(extras != null){
+                        Matrix matrix = new Matrix();
+
+                        Bitmap origin = extras.getParcelable("data");
+
+                        if(origin.getWidth() > origin.getHeight())
+                            matrix.postRotate(90);
+
+                        Bitmap scaledBitmap = Bitmap.createScaledBitmap(origin, frame.getMeasuredHeight(), frame.getMeasuredWidth(), true);
+                        Bitmap rotatedBitmap = Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.getWidth(), scaledBitmap.getHeight(), matrix, true);
+
+                        mDrawView.setCameraPicture(rotatedBitmap);
+
+                        File f = new File(mImageCaptureUri.getPath());
+                        if(f.exists())
+                            f.delete();
+                    }
+
+                    break;
+
                 case TAKE_CAMERA:
-                    if(data != null) {
+                    Intent intent = new Intent("com.android.camera.action.CROP");
+                    intent.setDataAndType(mImageCaptureUri, "image/*");
+
+                    intent.putExtra("outputX", 90);
+                    intent.putExtra("outputY", 90);
+                    intent.putExtra("aspectX", 1);
+                    intent.putExtra("aspectY", 1);
+                    intent.putExtra("scale", true);
+                    intent.putExtra("return-data", true);
+
+                    startActivityForResult(intent, CROP_FROM_CAMERA);
+
+                    /*if(data != null) {
                         Matrix matrix = new Matrix();
 
                         Bitmap origin = (Bitmap) data.getExtras().get("data");
@@ -168,7 +214,7 @@ public class DrawingActivity extends AppCompatActivity {
                         Bitmap rotatedBitmap = Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.getWidth(), scaledBitmap.getHeight(), matrix, true);
 
                         mDrawView.setCameraPicture(rotatedBitmap);
-                    }
+                    }*/
 
                     break;
             }
