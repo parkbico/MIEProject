@@ -23,13 +23,14 @@ public class DrawingActivity extends AppCompatActivity {
 
     private DrawView mDrawView;
     private MyColorPicker colorPicker;
+    FrameLayout frame;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_drawing);
 
-        FrameLayout frame = findViewById(R.id.frame);
+        frame = findViewById(R.id.frame);
 
         Button btnUndo, btnRedo, btnColorPickerD, btnPencilD, btnEraserD, btnCapture;
 
@@ -74,20 +75,20 @@ public class DrawingActivity extends AppCompatActivity {
         });
 
         btnCapture.setOnClickListener(new View.OnClickListener() {
-                                          @Override
-                                          public void onClick(View view) {
-                                              Toast.makeText(getApplicationContext(), "캡쳐완료", Toast.LENGTH_SHORT).show();
-                                              View rootView = getWindow().getDecorView();//activity의 view정보 구하기
+              @Override
+              public void onClick(View view) {
+                  Toast.makeText(getApplicationContext(), "저장하였습니다", Toast.LENGTH_SHORT).show();
+                  View rootView = getWindow().getDecorView();//activity의 view정보 구하기
 
-                                              File screenShot = ScreenShot(rootView);
-                                              if (screenShot != null) {
-                                                  //저장
-                                                  sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(screenShot)));
-                                                  //sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.parse("file://"+ Environment.getExternalStorageDirectory())));
+                  File screenShot = ScreenShot(frame);
+                  if (screenShot != null) {
+                      //저장
+                      sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(screenShot)));
+                      //sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.parse("file://"+ Environment.getExternalStorageDirectory())));
 
-                                              }
-                                          }
-                                      });
+                  }
+              }
+          });
         btnEraserD.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
