@@ -1,17 +1,23 @@
 package jyh.test.android.mie_project;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.icu.text.SimpleDateFormat;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import java.io.File;
@@ -20,18 +26,20 @@ import java.io.IOException;
 import java.util.Date;
 
 public class DrawingActivity extends AppCompatActivity {
+    final int TAKE_CAMERA = 1;
 
     private DrawView mDrawView;
     private MyColorPicker colorPicker;
+    private FrameLayout frame;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_drawing);
 
-        FrameLayout frame = findViewById(R.id.frame);
+        frame = findViewById(R.id.frame);
 
-        Button btnUndo, btnRedo, btnColorPickerD, btnPencilD, btnEraserD, btnCapture;
+        Button btnUndo, btnRedo, btnColorPickerD, btnPencilD, btnEraserD, btnPlus, btnCapture;
 
         btnUndo = findViewById(R.id.btnUndo);
         btnRedo = findViewById(R.id.btnRedo);
@@ -39,6 +47,7 @@ public class DrawingActivity extends AppCompatActivity {
         btnCapture = findViewById(R.id.btnCapture);
         btnPencilD = findViewById(R.id.btnPencilD);
         btnEraserD = findViewById(R.id.btnEraserD);
+        btnPlus = findViewById(R.id.btnPlus);
 
         mDrawView = new DrawView(this);
         frame.addView(mDrawView);
@@ -80,6 +89,17 @@ public class DrawingActivity extends AppCompatActivity {
             }
         });
 
+        btnPlus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PopupMenu popup = new PopupMenu(DrawingActivity.this, view);
+                getMenuInflater().inflate(R.menu.plus, popup.getMenu());
+                popup.setOnMenuItemClickListener(onClickPlus);
+
+                popup.show();
+            }
+        });
+
         btnCapture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -97,6 +117,44 @@ public class DrawingActivity extends AppCompatActivity {
         });
 
         onConfigurationChanged(Resources.getSystem().getConfiguration());
+    }
+
+    PopupMenu.OnMenuItemClickListener onClickPlus = new PopupMenu.OnMenuItemClickListener() {
+        @Override
+        public boolean onMenuItemClick(MenuItem menuItem) {
+            switch(menuItem.getItemId()){
+                case R.id.camera:
+                    Intent intent = new Intent();
+                    intent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
+                    startActivityForResult(intent, TAKE_CAMERA);
+
+                    break;
+            }
+
+            return false;
+        }
+    };
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if(resultCode == RESULT_OK){
+            switch(requestCode){
+                case TAKE_CAMERA:
+                    if(data != null) {
+                        Matrix matrix = new Matrix();
+                        matrix.postRotate(90);
+
+                        Bitmap origin = (Bitmap) data.getExtras().get("data");
+                        Bitmap scaledBitmap = Bitmap.createScaledBitmap(origin, frame.getMeasuredHeight(), frame.getMeasuredWidth(), true);
+                        Bitmap rotatedBitmap = Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.getWidth(), scaledBitmap.getHeight(), matrix, true);
+
+                        mDrawView.setCameraPicture(rotatedBitmap);
+
+                    }
+
+                    break;
+            }
+        }
     }
 
     //화면 캡쳐하기

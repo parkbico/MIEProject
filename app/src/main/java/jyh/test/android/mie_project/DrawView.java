@@ -9,6 +9,7 @@ import android.graphics.Path;
 import android.graphics.drawable.Drawable;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -26,6 +27,8 @@ public class DrawView extends View implements View.OnTouchListener{
 
     private int currentColor = Color.BLUE;
     private int currentWidth = 6;
+
+    private Bitmap cameraPicture;
 
     /**
      * {@code true} ColorPicker 활성화 상태 (btnColorPickerD 버튼 클릭)
@@ -45,6 +48,12 @@ public class DrawView extends View implements View.OnTouchListener{
 
     public void setPopupShown(boolean popupShown) {
         isPopupShown = popupShown;
+    }
+
+    public void setCameraPicture(Bitmap cameraPicture) {
+        erase();
+
+        this.cameraPicture = cameraPicture;
     }
 
     public void setCurrentColor(int currentColor) {
@@ -73,6 +82,11 @@ public class DrawView extends View implements View.OnTouchListener{
 
     @Override
     protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+
+        if(cameraPicture != null)
+            canvas.drawBitmap(cameraPicture, 0, 0, null);
+
         for(int i = 0; i < paths.size(); i++)
             canvas.drawPath(paths.get(i), paints.get(i));
 

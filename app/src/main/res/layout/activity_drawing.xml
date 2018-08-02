@@ -62,10 +62,11 @@
             style="?android:attr/buttonBarStyle"/>
 
         <Button
+            android:id="@+id/btnPlus"
             android:layout_width="45dp"
             android:layout_height="45dp"
             android:layout_margin="5dp"
-            android:background="@mipmap/ic_launcher"
+            android:background="@mipmap/plus"
             style="?android:attr/buttonBarStyle"/>
 
         <Button
