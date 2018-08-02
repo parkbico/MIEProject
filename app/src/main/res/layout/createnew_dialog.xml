@@ -7,7 +7,7 @@
 
 
     <EditText
-        android:layout_width="200dp"
+        android:layout_width="match_parent"
         android:layout_height="70dp"
         android:hint="새파일명(최대10자)"
         android:layout_margin="5dp"
