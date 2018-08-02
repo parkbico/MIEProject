@@ -82,6 +82,22 @@ public class DrawingActivity extends AppCompatActivity {
             }
         });
 
+        btnCapture.setOnClickListener(new View.OnClickListener() {
+              @Override
+              public void onClick(View view) {
+                  Toast.makeText(getApplicationContext(), "저장하였습니다", Toast.LENGTH_SHORT).show();
+                  View rootView = getWindow().getDecorView();//activity의 view정보 구하기
+
+                  File screenShot = ScreenShot(frame);
+                  if (screenShot != null) {
+                      //저장
+                      sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(screenShot)));
+                      //sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.parse("file://"+ Environment.getExternalStorageDirectory())));
+
+                  }
+              }
+          });
+
         btnEraserD.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
