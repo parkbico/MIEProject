@@ -1,6 +1,7 @@
 package jyh.test.android.mie_project;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.view.Gravity;
 import android.view.View;
@@ -16,6 +17,8 @@ public class MyColorPicker extends LinearLayout {
 
     private DrawView drawView;
 
+    private ColorPicker colorPicker;
+
     MyColorPicker(Activity parent, DrawView drawView){
         super(parent);
 
@@ -27,13 +30,16 @@ public class MyColorPicker extends LinearLayout {
         cp_window.setOutsideTouchable(true);
         cp_window.setBackgroundDrawable(new BitmapDrawable());
 
-        ColorPicker colorPicker = cp_view.findViewById(R.id.cp_picker);
+        colorPicker = cp_view.findViewById(R.id.cp_picker);
+        colorPicker.setColor(Color.BLUE);
+
         SeekBar seekBar = cp_view.findViewById(R.id.seekBar);
 
         colorPicker.setOnColorSelectedListener(new ColorPicker.OnColorSelectedListener() {
             @Override
             public void onColorSelected(int color) {
                 MyColorPicker.this.drawView.setCurrentColor(color);
+                colorPicker.setColor(color);
             }
         });
 
