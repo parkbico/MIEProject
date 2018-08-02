@@ -7,6 +7,33 @@
     tools:context=".DrawingActivity"
     android:orientation="vertical">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:orientation="horizontal"
+        android:background="#00A0F0">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:layout_marginLeft="15dp"
+            android:textSize="20dp"
+            android:textColor="#fff"
+            android:id="@+id/txtFileName"
+            />
+
+        <Button
+            android:layout_width="30dp"
+            android:layout_height="wrap_content"
+            android:background="@mipmap/menu_show"
+            android:layout_gravity="center"
+            android:id="@+id/btnMenu"/>
+
+    </LinearLayout>
+
     <FrameLayout
         android:id="@+id/frame"
         android:layout_width="match_parent"
@@ -68,15 +95,6 @@
             android:layout_margin="5dp"
             android:background="@mipmap/plus"
             style="?android:attr/buttonBarStyle"/>
-
-        <Button
-            android:id="@+id/btnCapture"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
-            android:layout_margin="5dp"
-            android:text="저장"
-            android:textSize="11dp"
-            />
 
     </LinearLayout>
 
