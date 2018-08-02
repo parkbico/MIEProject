@@ -73,26 +73,26 @@ public class DrawingActivity extends AppCompatActivity {
             }
         });
 
-        btnCapture.setOnClickListener(new View.OnClickListener() {
-                                          @Override
-                                          public void onClick(View view) {
-                                              Toast.makeText(getApplicationContext(), "캡쳐완료", Toast.LENGTH_SHORT).show();
-                                              View rootView = getWindow().getDecorView();//activity의 view정보 구하기
-
-                                              File screenShot = ScreenShot(rootView);
-                                              if (screenShot != null) {
-                                                  //저장
-                                                  sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(screenShot)));
-                                                  //sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.parse("file://"+ Environment.getExternalStorageDirectory())));
-
-                                              }
-                                          }
-                                      });
         btnEraserD.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getApplicationContext(), "지우개가 선택되었습니다.", Toast.LENGTH_SHORT).show();
-                mDrawView.setCurrentColor(Color.WHITE);
+                mDrawView.erase();
+            }
+        });
+
+        btnCapture.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(getApplicationContext(), "캡쳐완료", Toast.LENGTH_SHORT).show();
+                View rootView = getWindow().getDecorView();//activity의 view정보 구하기
+
+                File screenShot = ScreenShot(rootView);
+                if (screenShot != null) {
+                    //저장
+                    sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(screenShot)));
+                    //sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.parse("file://"+ Environment.getExternalStorageDirectory())));
+
+                }
             }
         });
 
@@ -127,5 +127,4 @@ public class DrawingActivity extends AppCompatActivity {
                 new SimpleDateFormat("yyyy_MM_dd HH_mm_ss");
         return dateFormat.format(date)+".png";
     }
-
 }
