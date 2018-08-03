@@ -22,7 +22,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.PopupMenu;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,6 +44,8 @@ public class DrawingActivity extends Activity {
     private MyColorPicker colorPicker;
     private FrameLayout frame;
 
+    private LinearLayout shapeSelector;
+
     //top bar , menu
     Button btnMenu;
     TextView txtFileName;
@@ -52,6 +57,8 @@ public class DrawingActivity extends Activity {
     private String selectedImagePath;
     private Uri mImageCaptureUri;
 
+    private Button btnShape;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,15 +66,23 @@ public class DrawingActivity extends Activity {
 
         frame = findViewById(R.id.frame);
 
-        Button btnUndo, btnRedo, btnColorPickerD, btnPencilD, btnEraserD, btnPlus ; // btnCapture;
-
+        // Tool Buttons
+        Button btnUndo, btnRedo, btnColorSelectorD, btnPalette, btnEraserD, btnPlus ; // btnCapture;
         btnUndo = findViewById(R.id.btnUndo);
         btnRedo = findViewById(R.id.btnRedo);
-        btnColorPickerD = findViewById(R.id.btnColorPickerD);
-        //btnCapture = findViewById(R.id.btnCapture);
-        btnPencilD = findViewById(R.id.btnPencilD);
+        btnColorSelectorD = findViewById(R.id.btnColorSelectorD);
+        btnPalette = findViewById(R.id.btnPalette);
+        btnShape = findViewById(R.id.btnShape);
         btnEraserD = findViewById(R.id.btnEraserD);
         btnPlus = findViewById(R.id.btnPlus);
+
+        // Shape Buttons
+        Button btnShapePen, btnShapeCircle, btnShapeRectangle;
+        btnShapePen = findViewById(R.id.btnShapePen);
+        btnShapeCircle = findViewById(R.id.btnShapeCircle);
+        btnShapeRectangle = findViewById(R.id.btnShapeRectangle);
+
+        shapeSelector = findViewById(R.id.shapeSelector);
 
         //top bar , menu
         btnMenu       = findViewById(R.id.btnMenu);
@@ -88,6 +103,9 @@ public class DrawingActivity extends Activity {
 
         colorPicker = new MyColorPicker(this, mDrawView);
 
+        /*
+            Button Events
+         */
         btnUndo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -102,35 +120,26 @@ public class DrawingActivity extends Activity {
             }
         });
 
-        btnColorPickerD.setOnClickListener(new View.OnClickListener() {
+        btnColorSelectorD.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                mDrawView.setPicking(true);
+            public void onClick(View view) { mDrawView.setSelecting(true);
             }
         });
 
-        btnPencilD.setOnClickListener(new View.OnClickListener() {
+        btnPalette.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 colorPicker.showPicker(view);
             }
         });
 
-//        btnCapture.setOnClickListener(new View.OnClickListener() {
-//              @Override
-//              public void onClick(View view) {
-//                  Toast.makeText(getApplicationContext(), "저장하였습니다", Toast.LENGTH_SHORT).show();
-//                  //View rootView = getWindow().getDecorView();//activity의 view정보 구하기
-//
-//                  File screenShot = ScreenShot(frame);
-//                  if (screenShot != null) {
-//                      //저장
-//                      sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(screenShot)));
-//                      //sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.parse("file://"+ Environment.getExternalStorageDirectory())));
-//
-//                  }
-//              }
-//          });
+        btnShape.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(shapeSelector.getVisibility() != View.VISIBLE)
+                    shapeSelector.setVisibility(View.VISIBLE);
+            }
+        });
 
         btnEraserD.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -150,21 +159,38 @@ public class DrawingActivity extends Activity {
             }
         });
 
-//        btnCapture.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Toast.makeText(getApplicationContext(), "캡쳐완료", Toast.LENGTH_SHORT).show();
-//                View rootView = getWindow().getDecorView();//activity의 view정보 구하기
-//
-//                File screenShot = ScreenShot(frame);
-//                if (screenShot != null) {
-//                    //저장
-//                    sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(screenShot)));
-//                    //sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.parse("file://"+ Environment.getExternalStorageDirectory())));
-//
-//                }
-//            }
-//        });
+        btnShapePen.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(shapeSelector.getVisibility() != View.GONE)
+                    shapeSelector.setVisibility(View.GONE);
+
+                mDrawView.setCurrentShape(DrawView.SHAPE_PEN);
+                btnShape.setBackgroundResource(R.mipmap.pen);
+            }
+        });
+
+        btnShapeCircle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(shapeSelector.getVisibility() != View.GONE)
+                    shapeSelector.setVisibility(View.GONE);
+
+                mDrawView.setCurrentShape(DrawView.SHAPE_CIRCLE);
+                btnShape.setBackgroundResource(R.mipmap.circle);
+            }
+        });
+
+        btnShapeRectangle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(shapeSelector.getVisibility() != View.GONE)
+                    shapeSelector.setVisibility(View.GONE);
+
+                mDrawView.setCurrentShape(DrawView.SHAPE_RECTANGLE);
+                btnShape.setBackgroundResource(R.mipmap.rounded_rectangle);
+            }
+        });
 
         onConfigurationChanged(Resources.getSystem().getConfiguration());
     }

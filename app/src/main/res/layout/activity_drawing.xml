@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -8,22 +8,23 @@
     android:orientation="vertical">
 
     <LinearLayout
+        android:id="@+id/topmenu"
+        android:layout_alignParentTop="true"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:orientation="horizontal"
         android:background="#00A0F0">
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text=""
             android:layout_gravity="center"
             android:layout_weight="1"
-            android:layout_marginLeft="15dp"
-            android:textSize="20dp"
+            android:layout_marginStart="15dp"
+            android:textSize="20sp"
             android:textColor="#fff"
-            android:id="@+id/txtFileName"
-            />
+            android:id="@+id/txtFileName"/>
 
         <Button
             android:layout_width="30dp"
@@ -36,66 +37,107 @@
 
     <FrameLayout
         android:id="@+id/frame"
+        android:layout_below="@+id/topmenu"
+        android:layout_above="@id/tools"
         android:layout_width="match_parent"
-        android:layout_height="450dp"
-        android:background="#fff"
-        android:layout_weight="1"/>
+        android:layout_height="match_parent"
+        android:background="#fff"/>
 
     <LinearLayout
+        android:id="@+id/tools"
+        android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#00A0F0"
-        android:layout_weight="1"
         android:gravity="center_vertical|center_horizontal">
 
         <Button
             android:id="@+id/btnUndo"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_margin="5dp"
             android:background="@mipmap/undo"
             style="?android:attr/buttonBarStyle"/>
 
         <Button
             android:id="@+id/btnRedo"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_margin="5dp"
             android:background="@mipmap/redo"
             style="?android:attr/buttonBarStyle"/>
 
         <Button
-            android:id="@+id/btnColorPickerD"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
+            android:id="@+id/btnColorSelectorD"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_margin="5dp"
             android:background="@mipmap/dropper"
             style="?android:attr/buttonBarStyle"/>
 
         <Button
-            android:id="@+id/btnPencilD"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
+            android:id="@+id/btnShape"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_margin="5dp"
             android:background="@mipmap/pen"
             style="?android:attr/buttonBarStyle"/>
 
         <Button
+            android:id="@+id/btnPalette"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_margin="5dp"
+            android:background="@mipmap/palette"
+            style="?android:attr/buttonBarStyle"/>
+
+        <Button
             android:id="@+id/btnEraserD"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_margin="5dp"
             android:background="@mipmap/erase"
             style="?android:attr/buttonBarStyle"/>
 
         <Button
             android:id="@+id/btnPlus"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_margin="5dp"
             android:background="@mipmap/plus"
             style="?android:attr/buttonBarStyle"/>
 
     </LinearLayout>
 
-</LinearLayout>
+    <LinearLayout
+        android:id="@+id/shapeSelector"
+        android:layout_above="@id/tools"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="#CCC"
+        android:visibility="gone">
+
+        <Button
+            android:id="@+id/btnShapePen"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_margin="5dp"
+            android:background="@mipmap/pen"/>
+
+        <Button
+            android:id="@+id/btnShapeCircle"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_margin="5dp"
+            android:background="@mipmap/circle"/>
+
+        <Button
+            android:id="@+id/btnShapeRectangle"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_margin="5dp"
+            android:background="@mipmap/rounded_rectangle"/>
+    </LinearLayout>
+
+</RelativeLayout>
