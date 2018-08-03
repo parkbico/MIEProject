@@ -1,10 +1,8 @@
 package jyh.test.android.mie_project;
 
-import android.app.Dialog;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.Matrix;
 import android.icu.text.SimpleDateFormat;
 import android.net.Uri;
@@ -21,14 +19,16 @@ import android.widget.FrameLayout;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 
+import com.theartofdev.edmodo.cropper.CropImage;
+
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Date;
 
 public class DrawingActivity extends AppCompatActivity {
-    final int CROP_FROM_CAMERA = 0;
-    final int TAKE_CAMERA = 1;
+    private final int TAKE_CAMERA = 1;
 
     private DrawView mDrawView;
     private MyColorPicker colorPicker;
@@ -149,7 +149,7 @@ public class DrawingActivity extends AppCompatActivity {
                     String url = "tmp" + String.valueOf(System.currentTimeMillis()) + ".jpg";
                     mImageCaptureUri = FileProvider.getUriForFile(getApplicationContext(),
                             "jyh.test.android.mie_project",
-                            new File(Environment.getExternalStorageDirectory(), url));
+                            new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), url));
 
                     intent.putExtra(MediaStore.EXTRA_OUTPUT, mImageCaptureUri);
 
@@ -165,56 +165,53 @@ public class DrawingActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if(resultCode == RESULT_OK){
+            Matrix matrix = new Matrix();
+            Bitmap bitmap = null;
+            Bitmap scaledBitmap;
+            Bitmap rotatedBitmap;
+
             switch(requestCode){
-                case CROP_FROM_CAMERA:
-                    final Bundle extras = data.getExtras();
-
-                    if(extras != null){
-                        Matrix matrix = new Matrix();
-
-                        Bitmap origin = extras.getParcelable("data");
-
-                        if(origin.getWidth() > origin.getHeight())
-                            matrix.postRotate(90);
-
-                        Bitmap scaledBitmap = Bitmap.createScaledBitmap(origin, frame.getMeasuredHeight(), frame.getMeasuredWidth(), true);
-                        Bitmap rotatedBitmap = Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.getWidth(), scaledBitmap.getHeight(), matrix, true);
-
-                        mDrawView.setCameraPicture(rotatedBitmap);
-
-                        File f = new File(mImageCaptureUri.getPath());
-                        if(f.exists())
-                            f.delete();
+                case TAKE_CAMERA:
+                    try {
+                        bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), mImageCaptureUri);
+                    } catch (IOException e){
+                        e.printStackTrace();
                     }
+
+                    if(bitmap.getWidth() > bitmap.getHeight())
+                        matrix.postRotate(90);
+
+                    scaledBitmap = Bitmap.createScaledBitmap(bitmap, frame.getMeasuredHeight(), frame.getMeasuredWidth(), true);
+                    rotatedBitmap = Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.getWidth(), scaledBitmap.getHeight(), matrix, true);
+
+                    ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+                    rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+                    String path = MediaStore.Images.Media.insertImage(getContentResolver(), rotatedBitmap, "Title", null);
+
+                    CropImage.activity(Uri.parse(path))
+                            .setAspectRatio(frame.getMeasuredWidth(), frame.getMeasuredHeight())
+                            .start(this);
 
                     break;
 
-                case TAKE_CAMERA:
-                    Intent intent = new Intent("com.android.camera.action.CROP");
-                    intent.setDataAndType(mImageCaptureUri, "image/*");
+                case CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE:
+                    CropImage.ActivityResult result = CropImage.getActivityResult(data);
+                    Uri resultUri = result.getUri();
 
-                    intent.putExtra("outputX", 90);
-                    intent.putExtra("outputY", 90);
-                    intent.putExtra("aspectX", 1);
-                    intent.putExtra("aspectY", 1);
-                    intent.putExtra("scale", true);
-                    intent.putExtra("return-data", true);
+                    try {
+                        bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), resultUri);
+                    } catch (IOException e){
+                        e.printStackTrace();
+                    }
 
-                    startActivityForResult(intent, CROP_FROM_CAMERA);
+                    scaledBitmap = Bitmap.createScaledBitmap(bitmap, frame.getMeasuredWidth(), frame.getMeasuredHeight(), true);
+                    rotatedBitmap = Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.getWidth(), scaledBitmap.getHeight(), matrix, true);
 
-                    /*if(data != null) {
-                        Matrix matrix = new Matrix();
+                    mDrawView.setCameraPicture(rotatedBitmap);
 
-                        Bitmap origin = (Bitmap) data.getExtras().get("data");
-
-                        if(origin.getWidth() > origin.getHeight())
-                            matrix.postRotate(90);
-
-                        Bitmap scaledBitmap = Bitmap.createScaledBitmap(origin, frame.getMeasuredHeight(), frame.getMeasuredWidth(), true);
-                        Bitmap rotatedBitmap = Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.getWidth(), scaledBitmap.getHeight(), matrix, true);
-
-                        mDrawView.setCameraPicture(rotatedBitmap);
-                    }*/
+                    File f = new File(mImageCaptureUri.getPath());
+                    if(f.exists())
+                        f.delete();
 
                     break;
             }
