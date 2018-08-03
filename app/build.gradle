@@ -27,4 +27,5 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation 'gun0912.ted:tedpermission:2.2.0'
     implementation 'com.larswerkman:HoloColorPicker:1.5'
+    implementation 'com.theartofdev.edmodo:android-image-cropper:2.7.+'
 }

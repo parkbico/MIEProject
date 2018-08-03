@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.Matrix;
 import android.icu.text.SimpleDateFormat;
 import android.net.Uri;
@@ -16,6 +15,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
@@ -26,6 +26,9 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.theartofdev.edmodo.cropper.CropImage;
+
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -47,6 +50,7 @@ public class DrawingActivity extends Activity {
     //gallery
     private static final int GALLERY_CODE = 2;
     private String selectedImagePath;
+    private Uri mImageCaptureUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -178,8 +182,15 @@ public class DrawingActivity extends Activity {
 
                     break;
                 case R.id.camera:
-                    Intent intent = new Intent();
-                    intent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
+                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+                    String url = "tmp" + String.valueOf(System.currentTimeMillis()) + ".jpg";
+                    mImageCaptureUri = FileProvider.getUriForFile(getApplicationContext(),
+                            "jyh.test.android.mie_project",
+                            new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), url));
+
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, mImageCaptureUri);
+
                     startActivityForResult(intent, TAKE_CAMERA);
 
                     break;
@@ -192,21 +203,53 @@ public class DrawingActivity extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if(resultCode == RESULT_OK){
+            Matrix matrix = new Matrix();
+            Bitmap bitmap = null;
+            Bitmap scaledBitmap;
+            Bitmap rotatedBitmap;
+
             switch(requestCode){
                 case TAKE_CAMERA:
-                    if(data != null) {
-                        Matrix matrix = new Matrix();
-
-                        Bitmap origin = (Bitmap) data.getExtras().get("data");
-
-                        if(origin.getWidth() > origin.getHeight())
-                            matrix.postRotate(90);
-
-                        Bitmap scaledBitmap = Bitmap.createScaledBitmap(origin, frame.getMeasuredHeight(), frame.getMeasuredWidth(), true);
-                        Bitmap rotatedBitmap = Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.getWidth(), scaledBitmap.getHeight(), matrix, true);
-
-                        mDrawView.setCameraPicture(rotatedBitmap);
+                    try {
+                        bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), mImageCaptureUri);
+                    } catch (IOException e){
+                        e.printStackTrace();
                     }
+
+                    if(bitmap.getWidth() > bitmap.getHeight())
+                        matrix.postRotate(90);
+
+                    scaledBitmap = Bitmap.createScaledBitmap(bitmap, frame.getMeasuredHeight(), frame.getMeasuredWidth(), true);
+                    rotatedBitmap = Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.getWidth(), scaledBitmap.getHeight(), matrix, true);
+
+                    ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+                    rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+                    String path = MediaStore.Images.Media.insertImage(getContentResolver(), rotatedBitmap, "Title", null);
+
+                    CropImage.activity(Uri.parse(path))
+                            .setAspectRatio(frame.getMeasuredWidth(), frame.getMeasuredHeight())
+                            .start(this);
+
+                    break;
+
+                case CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE:
+                    CropImage.ActivityResult result = CropImage.getActivityResult(data);
+                    Uri resultUri = result.getUri();
+
+                    try {
+                        bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), resultUri);
+                    } catch (IOException e){
+                        e.printStackTrace();
+                    }
+
+                    scaledBitmap = Bitmap.createScaledBitmap(bitmap, frame.getMeasuredWidth(), frame.getMeasuredHeight(), true);
+                    rotatedBitmap = Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.getWidth(), scaledBitmap.getHeight(), matrix, true);
+
+                    mDrawView.setCameraPicture(rotatedBitmap);
+
+                    File f = new File(mImageCaptureUri.getPath());
+                    if(f.exists())
+                        f.delete();
 
                     break;
 
