@@ -208,63 +208,64 @@ public class DrawingActivity extends Activity {
             Bitmap scaledBitmap;
             Bitmap rotatedBitmap;
 
-            switch(requestCode){
-                case TAKE_CAMERA:
+            if(requestCode == TAKE_CAMERA) {
+                try {
+                    bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), mImageCaptureUri);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                if (bitmap.getWidth() > bitmap.getHeight())
+                    matrix.postRotate(90);
+
+                scaledBitmap = Bitmap.createScaledBitmap(bitmap, frame.getMeasuredHeight(), frame.getMeasuredWidth(), true);
+                rotatedBitmap = Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.getWidth(), scaledBitmap.getHeight(), matrix, true);
+
+                ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+                rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+                String path = MediaStore.Images.Media.insertImage(getContentResolver(), rotatedBitmap, "Title", null);
+
+                CropImage.activity(Uri.parse(path))
+                        .setAspectRatio(frame.getMeasuredWidth(), frame.getMeasuredHeight())
+                        .start(this);
+
+            } else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+                CropImage.ActivityResult result = CropImage.getActivityResult(data);
+                Uri resultUri = result.getUri();
+
+                try {
+                    bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), resultUri);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                scaledBitmap = Bitmap.createScaledBitmap(bitmap, frame.getMeasuredWidth(), frame.getMeasuredHeight(), true);
+                rotatedBitmap = Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.getWidth(), scaledBitmap.getHeight(), matrix, true);
+
+                mDrawView.setCameraPicture(rotatedBitmap);
+
+                File f = new File(mImageCaptureUri.getPath());
+                if (f.exists())
+                    f.delete();
+
+            } else if (requestCode == GALLERY_CODE) {
+                if (data.getData() != null) {
                     try {
-                        bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), mImageCaptureUri);
+                        bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), data.getData());
                     } catch (IOException e){
                         e.printStackTrace();
                     }
 
-                    if(bitmap.getWidth() > bitmap.getHeight())
-                        matrix.postRotate(90);
-
-                    scaledBitmap = Bitmap.createScaledBitmap(bitmap, frame.getMeasuredHeight(), frame.getMeasuredWidth(), true);
-                    rotatedBitmap = Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.getWidth(), scaledBitmap.getHeight(), matrix, true);
-
                     ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-                    rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-                    String path = MediaStore.Images.Media.insertImage(getContentResolver(), rotatedBitmap, "Title", null);
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+                    String path = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "Title", null);
 
                     CropImage.activity(Uri.parse(path))
                             .setAspectRatio(frame.getMeasuredWidth(), frame.getMeasuredHeight())
                             .start(this);
 
-                    break;
-
-                case CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE:
-                    CropImage.ActivityResult result = CropImage.getActivityResult(data);
-                    Uri resultUri = result.getUri();
-
-                    try {
-                        bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), resultUri);
-                    } catch (IOException e){
-                        e.printStackTrace();
-                    }
-
-                    scaledBitmap = Bitmap.createScaledBitmap(bitmap, frame.getMeasuredWidth(), frame.getMeasuredHeight(), true);
-                    rotatedBitmap = Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.getWidth(), scaledBitmap.getHeight(), matrix, true);
-
-                    mDrawView.setCameraPicture(rotatedBitmap);
-
-                    File f = new File(mImageCaptureUri.getPath());
-                    if(f.exists())
-                        f.delete();
-
-                    break;
-
-                case GALLERY_CODE:
-                    if(data.getData()!=null){
-//                        Toast.makeText(DrawingActivity.this , "데이터 있다" , Toast.LENGTH_LONG).show();
-                        try{
-                            Bitmap bitmapG = MediaStore.Images.Media.getBitmap(getContentResolver() , data.getData());
-                            mDrawView.setCameraPicture(bitmapG);
-                        }catch(Exception e){
-
-                        }
-
-                    }
-                    break;
+                    //mDrawView.setCameraPicture(bitmapG);
+                }
             }
         }
     }
