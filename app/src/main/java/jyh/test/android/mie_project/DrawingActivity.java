@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Matrix;
@@ -16,6 +17,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -42,6 +44,9 @@ public class DrawingActivity extends Activity {
     String fileName;
     AlertDialog.Builder finishDialog ;
 
+    //gallery
+    private static final int GALLERY_CODE = 2;
+    private String selectedImagePath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -164,6 +169,14 @@ public class DrawingActivity extends Activity {
         @Override
         public boolean onMenuItemClick(MenuItem menuItem) {
             switch(menuItem.getItemId()){
+                case R.id.maketext:
+                    Toast.makeText(DrawingActivity.this , "텍스트 추가하기" , Toast.LENGTH_LONG).show();
+                    break;
+                case R.id.gallery:
+
+                    selectGallery();
+
+                    break;
                 case R.id.camera:
                     Intent intent = new Intent();
                     intent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -195,6 +208,19 @@ public class DrawingActivity extends Activity {
                         mDrawView.setCameraPicture(rotatedBitmap);
                     }
 
+                    break;
+
+                case GALLERY_CODE:
+                    if(data.getData()!=null){
+//                        Toast.makeText(DrawingActivity.this , "데이터 있다" , Toast.LENGTH_LONG).show();
+                        try{
+                            Bitmap bitmapG = MediaStore.Images.Media.getBitmap(getContentResolver() , data.getData());
+                            mDrawView.setCameraPicture(bitmapG);
+                        }catch(Exception e){
+
+                        }
+
+                    }
                     break;
             }
         }
@@ -300,4 +326,16 @@ public class DrawingActivity extends Activity {
             }
         }
     };
+
+    //갤러리 이동
+    public void selectGallery(){
+
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setData(MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        intent.setType("image/*");
+        startActivityForResult(intent , GALLERY_CODE);
+
+    }
+
+
 }
