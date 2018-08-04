@@ -55,7 +55,8 @@ public class DrawingActivity extends Activity {
     //gallery
     private static final int GALLERY_CODE = 2;
     private String selectedImagePath;
-    private Uri mImageCaptureUri;
+    private Uri mImageCaptureUri;        //카메라용
+    private Uri tempGalleryImageUri;    //갤러리용
 
     private Button btnShape;
 
@@ -270,7 +271,17 @@ public class DrawingActivity extends Activity {
 
                 mDrawView.setCameraPicture(rotatedBitmap);
 
-                File f = new File(mImageCaptureUri.getPath());
+                //2018.08.04 수정 박진우
+                File f = null;
+                if(mImageCaptureUri == null ){
+
+                    f = new File(tempGalleryImageUri.getPath());
+
+                }else{
+
+                    f = new File(mImageCaptureUri.getPath()); // getPath() 오류나고있음 , 갤러리의 uri를 넣어야 하는데 이 값이 없어서 그런듯
+
+                }
                 if (f.exists())
                     f.delete();
 
@@ -285,6 +296,9 @@ public class DrawingActivity extends Activity {
                     ByteArrayOutputStream bytes = new ByteArrayOutputStream();
                     bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
                     String path = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "Title", null);
+
+                    //2018.08.04 수정 박진우
+                    tempGalleryImageUri = data.getData();
 
                     CropImage.activity(Uri.parse(path))
                             .setAspectRatio(frame.getMeasuredWidth(), frame.getMeasuredHeight())
