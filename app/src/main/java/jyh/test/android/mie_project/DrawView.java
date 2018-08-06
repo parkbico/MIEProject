@@ -11,11 +11,9 @@ import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 public class DrawView extends View implements View.OnTouchListener {
     /// Constants
@@ -44,8 +42,6 @@ public class DrawView extends View implements View.OnTouchListener {
     private int currentWidth = 6;
 
     private Bitmap cameraPicture;
-
-
 
     /// Flags
     /**
@@ -106,7 +102,6 @@ public class DrawView extends View implements View.OnTouchListener {
 
         if (cameraPicture != null)
             canvas.drawBitmap(cameraPicture, 0, 0, null);
-
 
         for(int i = 0; i < shapeHistory.size(); i++) {
             switch (shapeHistory.get(i)) {
