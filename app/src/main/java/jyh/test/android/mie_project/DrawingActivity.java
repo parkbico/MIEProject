@@ -2,11 +2,9 @@ package jyh.test.android.mie_project;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -19,16 +17,12 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.content.FileProvider;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -57,9 +51,9 @@ public class DrawingActivity extends Activity {
 
     //gallery
     private static final int GALLERY_CODE = 2;
-    private String selectedImagePath;
+    // private String selectedImagePath;
     private Uri mImageCaptureUri;        //카메라용
-    private Uri tempGalleryImageUri;    //갤러리용
+    // private Uri tempGalleryImageUri;    //갤러리용
 
     private Button btnShape;
 
@@ -100,7 +94,10 @@ public class DrawingActivity extends Activity {
 
         Intent intent = getIntent();
         Bundle fileNameBundle = intent.getExtras();
-        fileName = fileNameBundle.getString("fileName"); //사용자가 입력한 파일명
+
+        if(fileNameBundle != null)
+            fileName = fileNameBundle.getString("fileName"); //사용자가 입력한 파일명
+
         txtFileName.setText(fileName);
 
         //top bar , menu - end
@@ -252,6 +249,9 @@ public class DrawingActivity extends Activity {
                     e.printStackTrace();
                 }
 
+                if(bitmap == null)
+                    throw new NullPointerException();
+
                 if (bitmap.getWidth() > bitmap.getHeight())
                     matrix.postRotate(90);
 
@@ -268,6 +268,10 @@ public class DrawingActivity extends Activity {
 
             } else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
                 CropImage.ActivityResult result = CropImage.getActivityResult(data);
+
+                if(result == null)
+                    throw new NullPointerException();
+
                 Uri resultUri = result.getUri();
 
                 try {
@@ -276,13 +280,17 @@ public class DrawingActivity extends Activity {
                     e.printStackTrace();
                 }
 
+                if(bitmap == null)
+                    throw new NullPointerException();
+
                 scaledBitmap = Bitmap.createScaledBitmap(bitmap, frame.getMeasuredWidth(), frame.getMeasuredHeight(), true);
                 rotatedBitmap = Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.getWidth(), scaledBitmap.getHeight(), matrix, true);
 
                 mDrawView.setCameraPicture(rotatedBitmap);
 
                 //2018.08.04 수정 박진우
-                File f = null;
+/*                File f = null;
+
                 if(mImageCaptureUri == null ){
 
                     f = new File(tempGalleryImageUri.getPath());
@@ -292,9 +300,14 @@ public class DrawingActivity extends Activity {
                     f = new File(mImageCaptureUri.getPath()); // getPath() 오류나고있음 , 갤러리의 uri를 넣어야 하는데 이 값이 없어서 그런듯
 
                 }
+
                 if (f.exists())
-                    f.delete();
+                    f.delete();*/
+
             } else if (requestCode == GALLERY_CODE) {
+                if(data == null)
+                    throw new NullPointerException();
+
                 if (data.getData() != null) {
                     try {
                         bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), data.getData());
@@ -302,13 +315,16 @@ public class DrawingActivity extends Activity {
                         e.printStackTrace();
                     }
 
+                    if(bitmap == null)
+                        throw new NullPointerException();
+
                     ByteArrayOutputStream bytes = new ByteArrayOutputStream();
                     bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
                     String path = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "Title", null);
 
                     //2018.08.04 수정 박진우
                     //getData return type -- Uri
-                    tempGalleryImageUri = data.getData();
+                    // tempGalleryImageUri = data.getData();
 
                     CropImage.activity(Uri.parse(path))
                             .setAspectRatio(frame.getMeasuredWidth(), frame.getMeasuredHeight())
@@ -321,6 +337,8 @@ public class DrawingActivity extends Activity {
 
                 if(data == null ){
                     Toast.makeText(DrawingActivity.this , "데이타없음 !!!" , Toast.LENGTH_LONG).show();
+
+                    throw new NullPointerException();
                 }//if
 
                 if(data.hasExtra("txtImage")){
@@ -329,7 +347,7 @@ public class DrawingActivity extends Activity {
                     byte[] byteArray = data.getByteArrayExtra("txtImage");
                     Bitmap bmp = BitmapFactory.decodeByteArray(byteArray , 0 , byteArray.length);
 
-                    Drawable dr = new BitmapDrawable(bmp);
+                    Drawable dr = new BitmapDrawable(getApplicationContext().getResources(), bmp);
 
                     tempF = new FrameLayout(DrawingActivity.this);
 //                    tempF.setLayoutParams(new FrameLayout.LayoutParams(1000,1000));
@@ -352,9 +370,9 @@ public class DrawingActivity extends Activity {
 
         String filename =  dateName(System.currentTimeMillis());
         File file = new File(Environment.getExternalStorageDirectory()+"/Pictures", fileName+"_"+filename);//Pictures폴더 filename 파일
-        FileOutputStream os = null;
+
         try{
-            os = new FileOutputStream(file);
+            FileOutputStream os = new FileOutputStream(file);
             screenBitmap.compress(Bitmap.CompressFormat.PNG, 90, os);  //비트맵을 PNG파일로 변환
             os.close();
         }catch (IOException e){
@@ -402,7 +420,8 @@ public class DrawingActivity extends Activity {
                 case R.id.menu1:
 
                     Toast.makeText(getApplicationContext(), "캡쳐완료", Toast.LENGTH_SHORT).show();
-                    View rootView = getWindow().getDecorView();//activity의 view정보 구하기
+
+                    // View rootView = getWindow().getDecorView();//activity의 view정보 구하기
 
                     File screenShot = ScreenShot(frame);
                     if (screenShot != null) {

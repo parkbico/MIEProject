@@ -1,6 +1,8 @@
 package jyh.test.android.mie_project;
 
 import android.app.Activity;
+import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.view.Gravity;
@@ -19,7 +21,7 @@ public class MyColorPicker extends LinearLayout {
 
     private ColorPicker colorPicker;
 
-    MyColorPicker(Activity parent, DrawView drawView){
+    public MyColorPicker(Activity parent, DrawView drawView){
         super(parent);
 
         this.drawView = drawView;
