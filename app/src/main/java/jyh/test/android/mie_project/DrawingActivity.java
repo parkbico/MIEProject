@@ -8,7 +8,10 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.icu.text.SimpleDateFormat;
 import android.net.Uri;
 import android.os.Bundle;
@@ -22,7 +25,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.PopupMenu;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,6 +47,8 @@ public class DrawingActivity extends Activity {
     private MyColorPicker colorPicker;
     private FrameLayout frame;
 
+    private LinearLayout shapeSelector;
+
     //top bar , menu
     Button btnMenu;
     TextView txtFileName;
@@ -50,7 +58,14 @@ public class DrawingActivity extends Activity {
     //gallery
     private static final int GALLERY_CODE = 2;
     private String selectedImagePath;
-    private Uri mImageCaptureUri;
+    private Uri mImageCaptureUri;        //카메라용
+    private Uri tempGalleryImageUri;    //갤러리용
+
+    private Button btnShape;
+
+    //make text
+    private static final int MAKETEXT_CODE = 3;
+    FrameLayout tempF ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,15 +74,23 @@ public class DrawingActivity extends Activity {
 
         frame = findViewById(R.id.frame);
 
-        Button btnUndo, btnRedo, btnColorPickerD, btnPencilD, btnEraserD, btnPlus ; // btnCapture;
-
+        // Tool Buttons
+        Button btnUndo, btnRedo, btnColorSelectorD, btnPalette, btnEraserD, btnPlus ; // btnCapture;
         btnUndo = findViewById(R.id.btnUndo);
         btnRedo = findViewById(R.id.btnRedo);
-        btnColorPickerD = findViewById(R.id.btnColorPickerD);
-        //btnCapture = findViewById(R.id.btnCapture);
-        btnPencilD = findViewById(R.id.btnPencilD);
+        btnColorSelectorD = findViewById(R.id.btnColorSelectorD);
+        btnPalette = findViewById(R.id.btnPalette);
+        btnShape = findViewById(R.id.btnShape);
         btnEraserD = findViewById(R.id.btnEraserD);
         btnPlus = findViewById(R.id.btnPlus);
+
+        // Shape Buttons
+        Button btnShapePen, btnShapeCircle, btnShapeRectangle;
+        btnShapePen = findViewById(R.id.btnShapePen);
+        btnShapeCircle = findViewById(R.id.btnShapeCircle);
+        btnShapeRectangle = findViewById(R.id.btnShapeRectangle);
+
+        shapeSelector = findViewById(R.id.shapeSelector);
 
         //top bar , menu
         btnMenu       = findViewById(R.id.btnMenu);
@@ -88,6 +111,9 @@ public class DrawingActivity extends Activity {
 
         colorPicker = new MyColorPicker(this, mDrawView);
 
+        /*
+            Button Events
+         */
         btnUndo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -102,40 +128,33 @@ public class DrawingActivity extends Activity {
             }
         });
 
-        btnColorPickerD.setOnClickListener(new View.OnClickListener() {
+        btnColorSelectorD.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                mDrawView.setPicking(true);
+            public void onClick(View view) { mDrawView.setSelecting(true);
             }
         });
 
-        btnPencilD.setOnClickListener(new View.OnClickListener() {
+        btnPalette.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 colorPicker.showPicker(view);
             }
         });
 
-//        btnCapture.setOnClickListener(new View.OnClickListener() {
-//              @Override
-//              public void onClick(View view) {
-//                  Toast.makeText(getApplicationContext(), "저장하였습니다", Toast.LENGTH_SHORT).show();
-//                  //View rootView = getWindow().getDecorView();//activity의 view정보 구하기
-//
-//                  File screenShot = ScreenShot(frame);
-//                  if (screenShot != null) {
-//                      //저장
-//                      sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(screenShot)));
-//                      //sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.parse("file://"+ Environment.getExternalStorageDirectory())));
-//
-//                  }
-//              }
-//          });
+        btnShape.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(shapeSelector.getVisibility() != View.VISIBLE)
+                    shapeSelector.setVisibility(View.VISIBLE);
+            }
+        });
 
         btnEraserD.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mDrawView.erase();
+                tempF.setBackground(null);
+
             }
         });
 
@@ -150,21 +169,38 @@ public class DrawingActivity extends Activity {
             }
         });
 
-//        btnCapture.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Toast.makeText(getApplicationContext(), "캡쳐완료", Toast.LENGTH_SHORT).show();
-//                View rootView = getWindow().getDecorView();//activity의 view정보 구하기
-//
-//                File screenShot = ScreenShot(frame);
-//                if (screenShot != null) {
-//                    //저장
-//                    sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(screenShot)));
-//                    //sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.parse("file://"+ Environment.getExternalStorageDirectory())));
-//
-//                }
-//            }
-//        });
+        btnShapePen.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(shapeSelector.getVisibility() != View.GONE)
+                    shapeSelector.setVisibility(View.GONE);
+
+                mDrawView.setCurrentShape(DrawView.SHAPE_PEN);
+                btnShape.setBackgroundResource(R.mipmap.pen);
+            }
+        });
+
+        btnShapeCircle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(shapeSelector.getVisibility() != View.GONE)
+                    shapeSelector.setVisibility(View.GONE);
+
+                mDrawView.setCurrentShape(DrawView.SHAPE_CIRCLE);
+                btnShape.setBackgroundResource(R.mipmap.circle);
+            }
+        });
+
+        btnShapeRectangle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(shapeSelector.getVisibility() != View.GONE)
+                    shapeSelector.setVisibility(View.GONE);
+
+                mDrawView.setCurrentShape(DrawView.SHAPE_RECTANGLE);
+                btnShape.setBackgroundResource(R.mipmap.rounded_rectangle);
+            }
+        });
 
         onConfigurationChanged(Resources.getSystem().getConfiguration());
     }
@@ -174,7 +210,8 @@ public class DrawingActivity extends Activity {
         public boolean onMenuItemClick(MenuItem menuItem) {
             switch(menuItem.getItemId()){
                 case R.id.maketext:
-                    Toast.makeText(DrawingActivity.this , "텍스트 추가하기" , Toast.LENGTH_LONG).show();
+//                    Toast.makeText(DrawingActivity.this , "텍스트 추가하기" , Toast.LENGTH_LONG).show();
+                    goMakeTextActivity();
                     break;
                 case R.id.gallery:
 
@@ -208,64 +245,102 @@ public class DrawingActivity extends Activity {
             Bitmap scaledBitmap;
             Bitmap rotatedBitmap;
 
-            switch(requestCode){
-                case TAKE_CAMERA:
+            if(requestCode == TAKE_CAMERA) {
+                try {
+                    bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), mImageCaptureUri);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                if (bitmap.getWidth() > bitmap.getHeight())
+                    matrix.postRotate(90);
+
+                scaledBitmap = Bitmap.createScaledBitmap(bitmap, frame.getMeasuredHeight(), frame.getMeasuredWidth(), true);
+                rotatedBitmap = Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.getWidth(), scaledBitmap.getHeight(), matrix, true);
+
+                ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+                rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+                String path = MediaStore.Images.Media.insertImage(getContentResolver(), rotatedBitmap, "Title", null);
+
+                CropImage.activity(Uri.parse(path))
+                        .setAspectRatio(frame.getMeasuredWidth(), frame.getMeasuredHeight())
+                        .start(this);
+
+            } else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+                CropImage.ActivityResult result = CropImage.getActivityResult(data);
+                Uri resultUri = result.getUri();
+
+                try {
+                    bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), resultUri);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                scaledBitmap = Bitmap.createScaledBitmap(bitmap, frame.getMeasuredWidth(), frame.getMeasuredHeight(), true);
+                rotatedBitmap = Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.getWidth(), scaledBitmap.getHeight(), matrix, true);
+
+                mDrawView.setCameraPicture(rotatedBitmap);
+
+                //2018.08.04 수정 박진우
+                File f = null;
+                if(mImageCaptureUri == null ){
+
+                    f = new File(tempGalleryImageUri.getPath());
+
+                }else{
+
+                    f = new File(mImageCaptureUri.getPath()); // getPath() 오류나고있음 , 갤러리의 uri를 넣어야 하는데 이 값이 없어서 그런듯
+
+                }
+                if (f.exists())
+                    f.delete();
+            } else if (requestCode == GALLERY_CODE) {
+                if (data.getData() != null) {
                     try {
-                        bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), mImageCaptureUri);
+                        bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), data.getData());
                     } catch (IOException e){
                         e.printStackTrace();
                     }
 
-                    if(bitmap.getWidth() > bitmap.getHeight())
-                        matrix.postRotate(90);
-
-                    scaledBitmap = Bitmap.createScaledBitmap(bitmap, frame.getMeasuredHeight(), frame.getMeasuredWidth(), true);
-                    rotatedBitmap = Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.getWidth(), scaledBitmap.getHeight(), matrix, true);
-
                     ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-                    rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-                    String path = MediaStore.Images.Media.insertImage(getContentResolver(), rotatedBitmap, "Title", null);
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+                    String path = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "Title", null);
+
+                    //2018.08.04 수정 박진우
+                    //getData return type -- Uri
+                    tempGalleryImageUri = data.getData();
 
                     CropImage.activity(Uri.parse(path))
                             .setAspectRatio(frame.getMeasuredWidth(), frame.getMeasuredHeight())
                             .start(this);
 
-                    break;
+                    //mDrawView.setCameraPicture(bitmapG);
+                }
+            } else if (requestCode == MAKETEXT_CODE){
+                //MAKETEXT_CODE start
 
-                case CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE:
-                    CropImage.ActivityResult result = CropImage.getActivityResult(data);
-                    Uri resultUri = result.getUri();
+                if(data == null ){
+                    Toast.makeText(DrawingActivity.this , "데이타없음 !!!" , Toast.LENGTH_LONG).show();
+                }//if
 
-                    try {
-                        bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), resultUri);
-                    } catch (IOException e){
-                        e.printStackTrace();
-                    }
+                if(data.hasExtra("txtImage")){
 
-                    scaledBitmap = Bitmap.createScaledBitmap(bitmap, frame.getMeasuredWidth(), frame.getMeasuredHeight(), true);
-                    rotatedBitmap = Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.getWidth(), scaledBitmap.getHeight(), matrix, true);
+//                    Toast.makeText(DrawingActivity.this , ""+data , Toast.LENGTH_LONG).show();
+                    byte[] byteArray = data.getByteArrayExtra("txtImage");
+                    Bitmap bmp = BitmapFactory.decodeByteArray(byteArray , 0 , byteArray.length);
 
-                    mDrawView.setCameraPicture(rotatedBitmap);
+                    Drawable dr = new BitmapDrawable(bmp);
 
-                    File f = new File(mImageCaptureUri.getPath());
-                    if(f.exists())
-                        f.delete();
+                    tempF = new FrameLayout(DrawingActivity.this);
+//                    tempF.setLayoutParams(new FrameLayout.LayoutParams(1000,1000));
+                    tempF.setBackground(dr);
+//                    frame.setAlpha(0);
+                    frame.addView(tempF);
+                    //mDrawView.setCameraPicture(bmp);
 
-                    break;
+                }//if
 
-                case GALLERY_CODE:
-                    if(data.getData()!=null){
-//                        Toast.makeText(DrawingActivity.this , "데이터 있다" , Toast.LENGTH_LONG).show();
-                        try{
-                            Bitmap bitmapG = MediaStore.Images.Media.getBitmap(getContentResolver() , data.getData());
-                            mDrawView.setCameraPicture(bitmapG);
-                        }catch(Exception e){
-
-                        }
-
-                    }
-                    break;
-            }
+            }//MAKETEXT_CODE
         }
     }
 
@@ -377,6 +452,25 @@ public class DrawingActivity extends Activity {
         intent.setData(MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         intent.setType("image/*");
         startActivityForResult(intent , GALLERY_CODE);
+
+    }
+
+    //MakeTextActivity로 이동 2018.08.03 박진우
+    public void goMakeTextActivity(){
+
+        Intent intentTxt = new Intent(DrawingActivity.this , MakeTextActivity.class);
+
+        //파일 이름을 공유해서 text 만들고 돌아올 때 같은지 체크해서 올바르게 적용 되도록 함
+        Bundle bundleTxt = new Bundle();
+        bundleTxt.putString("fileName", fileName);
+        intentTxt.putExtras(bundleTxt);
+
+        //중복방지
+        intentTxt.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+        //이동
+        startActivityForResult(intentTxt , MAKETEXT_CODE );
+
 
     }
 
