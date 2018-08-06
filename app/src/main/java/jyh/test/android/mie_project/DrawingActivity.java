@@ -368,7 +368,7 @@ public class DrawingActivity extends Activity {
 
         Bitmap screenBitmap = view.getDrawingCache();   //캐시를 비트맵으로 변환
 
-        String filename =  dateName(System.currentTimeMillis());
+        String filename = dateName(System.currentTimeMillis());
         File file = new File(Environment.getExternalStorageDirectory()+"/Pictures", fileName+"_"+filename);//Pictures폴더 filename 파일
 
         try{
