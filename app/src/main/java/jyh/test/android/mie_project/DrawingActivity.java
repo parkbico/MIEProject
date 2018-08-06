@@ -35,7 +35,9 @@ import java.io.IOException;
 import java.util.Date;
 
 public class DrawingActivity extends Activity {
-    final int TAKE_CAMERA = 1;
+    private final int TAKE_CAMERA = 1;
+    private final int GALLERY_CODE = 2;
+    private final int MAKETEXT_CODE = 3;
 
     private DrawView mDrawView;
     private MyColorPicker colorPicker;
@@ -49,8 +51,6 @@ public class DrawingActivity extends Activity {
     String fileName;
     AlertDialog.Builder finishDialog ;
 
-    //gallery
-    private static final int GALLERY_CODE = 2;
     // private String selectedImagePath;
     private Uri mImageCaptureUri;        //카메라용
     // private Uri tempGalleryImageUri;    //갤러리용
@@ -58,8 +58,7 @@ public class DrawingActivity extends Activity {
     private Button btnShape;
 
     //make text
-    private static final int MAKETEXT_CODE = 3;
-    FrameLayout tempF ;
+    private FrameLayout tempF ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,13 +99,12 @@ public class DrawingActivity extends Activity {
 
         txtFileName.setText(fileName);
 
-        //top bar , menu - end
-
-
         mDrawView = new DrawView(this);
         frame.addView(mDrawView);
 
         colorPicker = new MyColorPicker(this, mDrawView);
+
+        tempF = new FrameLayout(DrawingActivity.this);
 
         /*
             Button Events
@@ -151,7 +149,6 @@ public class DrawingActivity extends Activity {
             public void onClick(View v) {
                 mDrawView.erase();
                 tempF.setBackground(null);
-
             }
         });
 
@@ -207,7 +204,6 @@ public class DrawingActivity extends Activity {
         public boolean onMenuItemClick(MenuItem menuItem) {
             switch(menuItem.getItemId()){
                 case R.id.maketext:
-//                    Toast.makeText(DrawingActivity.this , "텍스트 추가하기" , Toast.LENGTH_LONG).show();
                     goMakeTextActivity();
                     break;
                 case R.id.gallery:
@@ -288,22 +284,6 @@ public class DrawingActivity extends Activity {
 
                 mDrawView.setCameraPicture(rotatedBitmap);
 
-                //2018.08.04 수정 박진우
-/*                File f = null;
-
-                if(mImageCaptureUri == null ){
-
-                    f = new File(tempGalleryImageUri.getPath());
-
-                }else{
-
-                    f = new File(mImageCaptureUri.getPath()); // getPath() 오류나고있음 , 갤러리의 uri를 넣어야 하는데 이 값이 없어서 그런듯
-
-                }
-
-                if (f.exists())
-                    f.delete();*/
-
             } else if (requestCode == GALLERY_CODE) {
                 if(data == null)
                     throw new NullPointerException();
@@ -322,15 +302,10 @@ public class DrawingActivity extends Activity {
                     bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
                     String path = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "Title", null);
 
-                    //2018.08.04 수정 박진우
-                    //getData return type -- Uri
-                    // tempGalleryImageUri = data.getData();
-
                     CropImage.activity(Uri.parse(path))
                             .setAspectRatio(frame.getMeasuredWidth(), frame.getMeasuredHeight())
                             .start(this);
 
-                    //mDrawView.setCameraPicture(bitmapG);
                 }
             } else if (requestCode == MAKETEXT_CODE){
                 //MAKETEXT_CODE start
@@ -342,20 +317,13 @@ public class DrawingActivity extends Activity {
                 }//if
 
                 if(data.hasExtra("txtImage")){
-
-//                    Toast.makeText(DrawingActivity.this , ""+data , Toast.LENGTH_LONG).show();
                     byte[] byteArray = data.getByteArrayExtra("txtImage");
                     Bitmap bmp = BitmapFactory.decodeByteArray(byteArray , 0 , byteArray.length);
 
                     Drawable dr = new BitmapDrawable(getApplicationContext().getResources(), bmp);
 
-                    tempF = new FrameLayout(DrawingActivity.this);
-//                    tempF.setLayoutParams(new FrameLayout.LayoutParams(1000,1000));
                     tempF.setBackground(dr);
-//                    frame.setAlpha(0);
                     frame.addView(tempF);
-                    //mDrawView.setCameraPicture(bmp);
-
                 }//if
 
             }//MAKETEXT_CODE
@@ -421,14 +389,10 @@ public class DrawingActivity extends Activity {
 
                     Toast.makeText(getApplicationContext(), "캡쳐완료", Toast.LENGTH_SHORT).show();
 
-                    // View rootView = getWindow().getDecorView();//activity의 view정보 구하기
-
                     File screenShot = ScreenShot(frame);
                     if (screenShot != null) {
                         //저장
                         sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(screenShot)));
-                        //sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.parse("file://"+ Environment.getExternalStorageDirectory())));
-
                     }
 
                     break;
@@ -453,25 +417,20 @@ public class DrawingActivity extends Activity {
     DialogInterface.OnClickListener finishClick = new DialogInterface.OnClickListener() {
         @Override
         public void onClick(DialogInterface dialogInterface, int i) {
-
             switch( i ){
                 case DialogInterface.BUTTON_POSITIVE :
-
                     finish();
                     break;
-
             }
         }
     };
 
     //갤러리 이동
     public void selectGallery(){
-
         Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setData(MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         intent.setType("image/*");
         startActivityForResult(intent , GALLERY_CODE);
-
     }
 
     //MakeTextActivity로 이동 2018.08.03 박진우
@@ -489,9 +448,5 @@ public class DrawingActivity extends Activity {
 
         //이동
         startActivityForResult(intentTxt , MAKETEXT_CODE );
-
-
     }
-
-
 }
