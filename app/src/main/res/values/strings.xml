@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">MIE_Project</string>
+    <string name="main_btn_drawing">DRAWING</string>
+    <string name="main_btn_text">TEXT</string>
+    <string name="make_text_et_hint">텍스트를 입력하세요.</string>
+    <string name="createnew_dialog_et_hint">새파일명(최대10자)</string>
+    <string name="create">생성</string>
+    <string name="cancel">취소</string>
+    <string name="exit">종료</string>
 </resources>

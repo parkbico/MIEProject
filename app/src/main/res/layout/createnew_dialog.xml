@@ -9,7 +9,8 @@
     <EditText
         android:layout_width="match_parent"
         android:layout_height="70dp"
-        android:hint="새파일명(최대10자)"
+        android:inputType="text"
+        android:hint="@string/createnew_dialog_et_hint"
         android:layout_margin="5dp"
         android:maxLength="10"
         android:id="@+id/editNewFileName"
@@ -26,16 +27,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="생성"
+            android:text="@string/create"
             android:id="@+id/btnCreateNewFile"
+            style="?android:attr/buttonBarStyle"
             />
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="취소"
+            android:text="@string/cancel"
             android:id="@+id/btnCreateCancel"
+            style="?android:attr/buttonBarStyle"
             />
 
     </LinearLayout>
