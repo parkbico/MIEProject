@@ -245,6 +245,8 @@ public class DrawView extends View implements View.OnTouchListener {
 
                         Toast.makeText(getContext(), "색상이 설정되었습니다.", Toast.LENGTH_SHORT).show();
 
+                        mPaint.setColor(currentColor);
+
                         break;
 
                     case MotionEvent.ACTION_UP:
