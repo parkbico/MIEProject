@@ -8,7 +8,10 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.icu.text.SimpleDateFormat;
 import android.net.Uri;
 import android.os.Bundle;
@@ -59,6 +62,9 @@ public class DrawingActivity extends Activity {
     private Uri tempGalleryImageUri;    //갤러리용
 
     private Button btnShape;
+
+    //make text
+    private static final int MAKETEXT_CODE = 3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -201,7 +207,8 @@ public class DrawingActivity extends Activity {
         public boolean onMenuItemClick(MenuItem menuItem) {
             switch(menuItem.getItemId()){
                 case R.id.maketext:
-                    Toast.makeText(DrawingActivity.this , "텍스트 추가하기" , Toast.LENGTH_LONG).show();
+//                    Toast.makeText(DrawingActivity.this , "텍스트 추가하기" , Toast.LENGTH_LONG).show();
+                    goMakeTextActivity();
                     break;
                 case R.id.gallery:
 
@@ -306,7 +313,31 @@ public class DrawingActivity extends Activity {
 
                     //mDrawView.setCameraPicture(bitmapG);
                 }
-            }
+            } else if (requestCode == MAKETEXT_CODE){
+                //MAKETEXT_CODE start
+
+                if(data == null ){
+                    Toast.makeText(DrawingActivity.this , "데이타없음 !!!" , Toast.LENGTH_LONG).show();
+                }//if
+
+                if(data.hasExtra("txtImage")){
+
+//                    Toast.makeText(DrawingActivity.this , ""+data , Toast.LENGTH_LONG).show();
+                    byte[] byteArray = data.getByteArrayExtra("txtImage");
+                    Bitmap bmp = BitmapFactory.decodeByteArray(byteArray , 0 , byteArray.length);
+
+                    Drawable dr = new BitmapDrawable(bmp);
+
+                    FrameLayout tempF = new FrameLayout(DrawingActivity.this);
+//                    tempF.setLayoutParams(new FrameLayout.LayoutParams(1000,1000));
+                    tempF.setBackground(dr);
+//                    frame.setAlpha(0);
+                    frame.addView(tempF);
+                    //mDrawView.setCameraPicture(bmp);
+
+                }//if
+
+            }//MAKETEXT_CODE
         }
     }
 
@@ -418,6 +449,25 @@ public class DrawingActivity extends Activity {
         intent.setData(MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         intent.setType("image/*");
         startActivityForResult(intent , GALLERY_CODE);
+
+    }
+
+    //MakeTextActivity로 이동 2018.08.03 박진우
+    public void goMakeTextActivity(){
+
+        Intent intentTxt = new Intent(DrawingActivity.this , MakeTextActivity.class);
+
+        //파일 이름을 공유해서 text 만들고 돌아올 때 같은지 체크해서 올바르게 적용 되도록 함
+        Bundle bundleTxt = new Bundle();
+        bundleTxt.putString("fileName", fileName);
+        intentTxt.putExtras(bundleTxt);
+
+        //중복방지
+        intentTxt.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+        //이동
+        startActivityForResult(intentTxt , MAKETEXT_CODE );
+
 
     }
 
