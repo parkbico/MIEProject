@@ -123,21 +123,24 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_margin="5dp"
-            android:background="@mipmap/pen"/>
+            android:background="@mipmap/pen"
+            style="?android:attr/buttonBarStyle"/>
 
         <Button
             android:id="@+id/btnShapeCircle"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_margin="5dp"
-            android:background="@mipmap/circle"/>
+            android:background="@mipmap/circle"
+            style="?android:attr/buttonBarStyle"/>
 
         <Button
             android:id="@+id/btnShapeRectangle"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_margin="5dp"
-            android:background="@mipmap/rounded_rectangle"/>
+            android:background="@mipmap/rounded_rectangle"
+            style="?android:attr/buttonBarStyle"/>
     </LinearLayout>
 
 </RelativeLayout>

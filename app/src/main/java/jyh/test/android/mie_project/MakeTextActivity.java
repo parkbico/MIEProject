@@ -3,20 +3,12 @@ package jyh.test.android.mie_project;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.support.annotation.ColorInt;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.Toast;
 import java.io.ByteArrayOutputStream;
-
-import static android.graphics.Paint.ANTI_ALIAS_FLAG;
 
 public class MakeTextActivity extends Activity {
 
@@ -45,7 +37,9 @@ public class MakeTextActivity extends Activity {
         //intent, bundle
         Intent intentTxt        = getIntent();
         Bundle bundleTxt        = intentTxt.getExtras();
-        checkFileName    = bundleTxt.getString("fileName");
+
+        if(bundleTxt != null)
+            checkFileName    = bundleTxt.getString("fileName");
 
         //click
         btnPlusTxt.setOnClickListener( plusClick );
@@ -96,21 +90,4 @@ public class MakeTextActivity extends Activity {
             }
         }
     };
-
-    public Bitmap textAsBitmap(String text, float textSize, int textColor) {
-        Paint paint = new Paint(ANTI_ALIAS_FLAG);
-        paint.setTextSize(textSize);
-        paint.setColor(textColor);
-        paint.setTextAlign(Paint.Align.LEFT);
-        float baseline = -paint.ascent(); // ascent() is negative
-        int width = (int) (paint.measureText(text) + 0.5f); // round
-        int height = (int) (baseline + paint.descent() + 0.5f);
-        Toast.makeText(MakeTextActivity.this , "(width : "+width+"  height: "+height+ ")" , Toast.LENGTH_LONG).show();
-
-        Bitmap image = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(image);
-        canvas.drawText(text, 0, baseline, paint);
-        return image;
-    }
-
 }

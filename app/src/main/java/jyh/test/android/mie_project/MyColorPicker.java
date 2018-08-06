@@ -2,9 +2,7 @@ package jyh.test.android.mie_project;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -16,10 +14,12 @@ import com.larswerkman.holocolorpicker.ColorPicker;
 
 public class MyColorPicker extends LinearLayout {
     private PopupWindow cp_window;
-
     private DrawView drawView;
-
     private ColorPicker colorPicker;
+
+    public MyColorPicker(Context context){
+        super(context);
+    }
 
     public MyColorPicker(Activity parent, DrawView drawView){
         super(parent);
@@ -30,7 +30,7 @@ public class MyColorPicker extends LinearLayout {
 
         cp_window = new PopupWindow(cp_view, RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
         cp_window.setOutsideTouchable(true);
-        cp_window.setBackgroundDrawable(new BitmapDrawable());
+        cp_window.setBackgroundDrawable(null);
 
         colorPicker = cp_view.findViewById(R.id.cp_picker);
         colorPicker.setColor(Color.BLUE);
