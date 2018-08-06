@@ -284,7 +284,6 @@ public class DrawingActivity extends Activity {
                 }
                 if (f.exists())
                     f.delete();
-
             } else if (requestCode == GALLERY_CODE) {
                 if (data.getData() != null) {
                     try {
@@ -298,6 +297,7 @@ public class DrawingActivity extends Activity {
                     String path = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, "Title", null);
 
                     //2018.08.04 수정 박진우
+                    //getData return type -- Uri
                     tempGalleryImageUri = data.getData();
 
                     CropImage.activity(Uri.parse(path))
