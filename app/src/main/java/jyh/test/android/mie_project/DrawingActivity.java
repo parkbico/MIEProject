@@ -65,6 +65,7 @@ public class DrawingActivity extends Activity {
 
     //make text
     private static final int MAKETEXT_CODE = 3;
+    FrameLayout tempF ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -152,6 +153,8 @@ public class DrawingActivity extends Activity {
             @Override
             public void onClick(View v) {
                 mDrawView.erase();
+                tempF.setBackground(null);
+
             }
         });
 
@@ -328,7 +331,7 @@ public class DrawingActivity extends Activity {
 
                     Drawable dr = new BitmapDrawable(bmp);
 
-                    FrameLayout tempF = new FrameLayout(DrawingActivity.this);
+                    tempF = new FrameLayout(DrawingActivity.this);
 //                    tempF.setLayoutParams(new FrameLayout.LayoutParams(1000,1000));
                     tempF.setBackground(dr);
 //                    frame.setAlpha(0);
