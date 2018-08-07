@@ -18,9 +18,11 @@ import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.content.FileProvider;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
@@ -59,6 +61,8 @@ public class DrawingActivity extends Activity {
 
     //make text
     private FrameLayout tempF ;
+    ImageView iv ;
+    Button btnSetText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,6 +109,11 @@ public class DrawingActivity extends Activity {
         colorPicker = new MyColorPicker(this, mDrawView);
 
         tempF = new FrameLayout(DrawingActivity.this);
+        FrameLayout.LayoutParams FramelayoutParams = new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT
+                , FrameLayout.LayoutParams.MATCH_PARENT
+                , 1);
+        tempF.setLayoutParams(FramelayoutParams);
 
         /*
             Button Events
@@ -148,7 +157,10 @@ public class DrawingActivity extends Activity {
             @Override
             public void onClick(View v) {
                 mDrawView.erase();
-                tempF.setBackground(null);
+                tempF = null ;
+                iv.setImageBitmap(null);
+                btnSetText.setVisibility(View.GONE);
+                btnSetText = null;
             }
         });
 
@@ -310,20 +322,68 @@ public class DrawingActivity extends Activity {
             } else if (requestCode == MAKETEXT_CODE){
                 //MAKETEXT_CODE start
 
-                if(data == null ){
-                    Toast.makeText(DrawingActivity.this , "데이타없음 !!!" , Toast.LENGTH_LONG).show();
-
-                    throw new NullPointerException();
-                }//if
-
                 if(data.hasExtra("txtImage")){
+
+                    if( tempF == null ){
+                        //Frame --> tempF 크기 지정
+                        tempF = new FrameLayout(DrawingActivity.this);
+
+                        FrameLayout.LayoutParams layoutParams2 = new FrameLayout.LayoutParams(
+                                FrameLayout.LayoutParams.MATCH_PARENT
+                                , FrameLayout.LayoutParams.MATCH_PARENT
+                                , 1);
+
+                        tempF.setLayoutParams(layoutParams2);
+                    }
+
+                    //Bitmap 이미지 생성
                     byte[] byteArray = data.getByteArrayExtra("txtImage");
-                    Bitmap bmp = BitmapFactory.decodeByteArray(byteArray , 0 , byteArray.length);
+                    Bitmap bmp    = BitmapFactory.decodeByteArray(byteArray , 0 , byteArray.length);
+                    int w = data.getExtras().getInt("width");
+                    int h = data.getExtras().getInt("height");
 
-                    Drawable dr = new BitmapDrawable(getApplicationContext().getResources(), bmp);
+                    int setWidth = 0;
+                    if( (w + 70) > frame.getWidth() ){
+                        setWidth = w;
+                    }else{
+                        setWidth = (w + 70);
+                    }
 
-                    tempF.setBackground(dr);
+                    Bitmap resize = Bitmap.createBitmap( bmp , 0 ,0 , setWidth , h ); //크기 잘려서 70 추가해줌
+
+                    // Linear --> ImageView 크기 지정
+                    LinearLayout.LayoutParams layoutParams =
+                            new LinearLayout.LayoutParams( setWidth , h );
+
+                    //ImageVIew 설정
+                    iv = new ImageView(DrawingActivity.this);
+                    iv.setImageBitmap(resize);
+                    iv.setLayoutParams(layoutParams);
+                    iv.setAdjustViewBounds(true);
+                    iv.setScaleType(ImageView.ScaleType.FIT_XY);
+
+                    //Button
+                    btnSetText = new Button(DrawingActivity.this);
+                    LinearLayout.LayoutParams btnParams =
+                            new LinearLayout.LayoutParams( 200 , 100 );
+                    btnSetText.setLayoutParams(btnParams);
+                    btnSetText.setTextSize(12);
+                    btnSetText.setText("고정");
+
+                    btnSetText.setX(0);
+                    btnSetText.setY(h);
+
+                    btnSetText.setOnClickListener( clickBtnSetText );
+
+                    tempF.addView(btnSetText);
+
+                    //ImageView (Text 이미지로 만든거) 터치로 움직여야 하니까 이벤트 줌
+                    iv.setOnTouchListener( touchEvent );
+
+                    //ImageViwe < tempF < frame 담기
+                    tempF.addView(iv);
                     frame.addView(tempF);
+
                 }//if
 
             }//MAKETEXT_CODE
@@ -449,4 +509,81 @@ public class DrawingActivity extends Activity {
         //이동
         startActivityForResult(intentTxt , MAKETEXT_CODE );
     }
+
+    View.OnTouchListener touchEvent = new View.OnTouchListener() {
+
+        float oldXvalue;
+        float oldYvalue;
+
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+
+            int width = frame.getWidth() - iv.getWidth();
+            int height = frame.getHeight()- iv.getHeight();
+
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+
+                oldXvalue = event.getX();
+                oldYvalue = event.getY();
+
+            } else if (event.getAction() == MotionEvent.ACTION_MOVE) {
+
+                v.setX(event.getRawX() - oldXvalue);
+                v.setY(event.getRawY() - (oldYvalue + v.getHeight()));
+
+            } else if (event.getAction() == MotionEvent.ACTION_UP) {
+
+                if (v.getX() > width && v.getY() > height) {
+                    v.setX(width);
+                    v.setY(height);
+                } else if (v.getX() < 0 && v.getY() > height) {
+                    v.setX(0);
+                    v.setY(height);
+                } else if (v.getX() > width && v.getY() < 0) {
+                    v.setX(width);
+                    v.setY(0);
+                } else if (v.getX() < 0 && v.getY() < 0) {
+                    v.setX(0);
+                    v.setY(0);
+                } else if (v.getX() < 0 || v.getX() > width) {
+                    if (v.getX() < 0) {
+                        v.setX(0);
+                        v.setY(event.getRawY() - oldYvalue - v.getHeight());
+                    } else {
+                        v.setX(width);
+                        v.setY(event.getRawY() - oldYvalue - v.getHeight());
+                    }
+                } else if (v.getY() < 0 || v.getY() > height) {
+                    if (v.getY() < 0) {
+                        v.setX(event.getRawX() - oldXvalue);
+                        v.setY(0);
+                    } else {
+                        v.setX(event.getRawX() - oldXvalue);
+                        v.setY(height);
+                    }
+                }
+            }
+
+            btnSetText.setX(v.getX());
+
+            if( v.getY() + btnSetText.getHeight() > height ){
+                btnSetText.setY(v.getY() - (  btnSetText.getHeight() ));
+            }else{
+                btnSetText.setY(v.getY() + v.getHeight());
+            }
+
+            return true;
+        }
+    };
+
+    View.OnClickListener clickBtnSetText = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+
+            iv.setOnTouchListener( null );
+            btnSetText.setEnabled(false);
+            btnSetText.setVisibility(View.GONE);
+
+        }
+    };
 }

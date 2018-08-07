@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
@@ -90,8 +91,14 @@ public class MainActivity extends Activity {
             switch ( view.getId() ){
 
                 case R.id.btnCreateNewFile:
-                    Intent i                = new Intent(MainActivity.this, DrawingActivity.class);
                     String filename         = editNewFileName.getText().toString();
+
+                    if(filename.isEmpty() ){
+                        Toast.makeText(getApplicationContext() , "파일명을 입력해주세요" , Toast.LENGTH_LONG).show();
+                        return;
+                    }
+
+                    Intent i                = new Intent(MainActivity.this, DrawingActivity.class);
 
                     Bundle filenameBundle   = new Bundle();
                     filenameBundle.putString( "fileName" , filename );
