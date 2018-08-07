@@ -158,9 +158,14 @@ public class DrawingActivity extends Activity {
             public void onClick(View v) {
                 mDrawView.erase();
                 tempF = null ;
-                iv.setImageBitmap(null);
-                btnSetText.setVisibility(View.GONE);
-                btnSetText = null;
+                if( iv != null){
+                    iv.setVisibility(View.GONE);
+                    iv = null;
+                }
+                if( btnSetText != null ){
+                    btnSetText.setVisibility(View.GONE);
+                    btnSetText = null;
+                }
             }
         });
 
