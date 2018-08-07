@@ -82,10 +82,9 @@ public class MakeTextActivity extends Activity {
                         //EditText에 실제로 있는 데이터의 width를 측정
                         String[] tempArr = editText.getText().toString().split("\n");
                         int maxLength = 0;
-                        for(int i = 0 ; i < tempArr.length ; i++ ){
-
-                            if( maxLength < tempArr[i].length() ){
-                                maxLength = tempArr[i].length();
+                        for(String str : tempArr){
+                            if( maxLength < str.length() ){
+                                maxLength = str.length();
                             }
                         }
 
@@ -134,7 +133,8 @@ public class MakeTextActivity extends Activity {
 
             InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
 
-            imm.showSoftInput(editText, InputMethodManager.SHOW_FORCED);
+            if(imm != null)
+                imm.showSoftInput(editText, InputMethodManager.SHOW_FORCED);
         }
     };
 

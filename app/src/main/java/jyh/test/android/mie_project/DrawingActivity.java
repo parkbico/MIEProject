@@ -8,8 +8,6 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.icu.text.SimpleDateFormat;
 import android.net.Uri;
 import android.os.Bundle;
@@ -156,16 +154,9 @@ public class DrawingActivity extends Activity {
         btnEraserD.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mDrawView.erase();
-                tempF = null ;
-                if( iv != null){
-                    iv.setVisibility(View.GONE);
-                    iv = null;
-                }
-                if( btnSetText != null ){
-                    btnSetText.setVisibility(View.GONE);
-                    btnSetText = null;
-                }
+                mDrawView.eraseAll();
+                frame.removeAllViews();
+                frame.addView(mDrawView);
             }
         });
 
@@ -327,32 +318,33 @@ public class DrawingActivity extends Activity {
             } else if (requestCode == MAKETEXT_CODE){
                 //MAKETEXT_CODE start
 
-                if(data.hasExtra("txtImage")){
+                if(data != null && data.hasExtra("txtImage")){
+                    //Frame --> tempF 크기 지정
+                    tempF = new FrameLayout(DrawingActivity.this);
 
-                    if( tempF == null ){
-                        //Frame --> tempF 크기 지정
-                        tempF = new FrameLayout(DrawingActivity.this);
+                    FrameLayout.LayoutParams layoutParams2 = new FrameLayout.LayoutParams(
+                            FrameLayout.LayoutParams.MATCH_PARENT
+                            , FrameLayout.LayoutParams.MATCH_PARENT
+                            , 1);
 
-                        FrameLayout.LayoutParams layoutParams2 = new FrameLayout.LayoutParams(
-                                FrameLayout.LayoutParams.MATCH_PARENT
-                                , FrameLayout.LayoutParams.MATCH_PARENT
-                                , 1);
-
-                        tempF.setLayoutParams(layoutParams2);
-                    }
+                    tempF.setLayoutParams(layoutParams2);
 
                     //Bitmap 이미지 생성
                     byte[] byteArray = data.getByteArrayExtra("txtImage");
                     Bitmap bmp    = BitmapFactory.decodeByteArray(byteArray , 0 , byteArray.length);
-                    int w = data.getExtras().getInt("width");
-                    int h = data.getExtras().getInt("height");
 
-                    int setWidth = 0;
-                    if( (w + 70) > frame.getWidth() ){
+                    int w, h;
+                    if(data.getExtras() !=  null) {
+                        w = data.getExtras().getInt("width");
+                        h = data.getExtras().getInt("height");
+                    } else
+                        return;
+
+                    int setWidth;
+                    if( (w + 70) > frame.getWidth() )
                         setWidth = w;
-                    }else{
+                    else
                         setWidth = (w + 70);
-                    }
 
                     Bitmap resize = Bitmap.createBitmap( bmp , 0 ,0 , setWidth , h ); //크기 잘려서 70 추가해줌
 
@@ -516,13 +508,11 @@ public class DrawingActivity extends Activity {
     }
 
     View.OnTouchListener touchEvent = new View.OnTouchListener() {
-
         float oldXvalue;
         float oldYvalue;
 
         @Override
         public boolean onTouch(View v, MotionEvent event) {
-
             int width = frame.getWidth() - iv.getWidth();
             int height = frame.getHeight()- iv.getHeight();
 
@@ -584,11 +574,9 @@ public class DrawingActivity extends Activity {
     View.OnClickListener clickBtnSetText = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-
             iv.setOnTouchListener( null );
             btnSetText.setEnabled(false);
             btnSetText.setVisibility(View.GONE);
-
         }
     };
 }
